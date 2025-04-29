@@ -18,7 +18,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "build-npm": "NODE_ENV=production && rm -rf dist && mkdir dist && npx babel src --out-dir dist --copy-files",
-    "test": "jest --coverage",
+    "test": "jest --coverage --watchAll=false",
     "test-ex": "react-scripts test  --coverage --collectCoverageFrom=src/**/*js* --collectCoverageFrom=!src/reportWebVitals.js --collectCoverageFrom=!src/index.js --watchAll=false --setupFiles=./.jest/setEnvVars.js",
     "eject": "react-scripts eject",
     "jsdoc": "jsdoc -c ./jsdoc.config.json -r -d ./docs",
