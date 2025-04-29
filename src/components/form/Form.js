@@ -82,7 +82,7 @@ function Form({addUser}) {
         }
 
         localStorage.setItem('users', JSON.stringify(p));
-        setSuccess({message: "Formulaire soumis avec succès !"});
+        setSuccess({message: "Enregistrement réussi !"});
         addUser(p);
 
         // Reset form data
