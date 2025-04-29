@@ -10,6 +10,7 @@ function Form({addUser}) {
         city: '',
         postalCode: ''
     });
+    const [success, setSuccess] = useState({});
     const [errors, setErrors] = useState({});
     const [isValid, setIsValid] = useState(false);
 
@@ -76,13 +77,15 @@ function Form({addUser}) {
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
+            success.message = "";
             return;
         }
 
         localStorage.setItem('users', JSON.stringify(p));
-        alert('Enregistrement réussi !');
-        addUser(p)
+        success.message = "Enregistrement réussi !";
+        addUser(p);
 
+        // Reset form data
         setFormData({
             name: '',
             surname: '',
@@ -101,6 +104,7 @@ function Form({addUser}) {
 
     return (
         <form onSubmit={handleSubmit}>
+            {success.message && <span className="success-message">{success.message}</span>}
             <div>
                 <label htmlFor="name">Nom de famille :</label>
                 <input

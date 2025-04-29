@@ -2,93 +2,93 @@ import {calculateAge, isValidEmail, isValidName, isValidSurname, isValidCity, is
 
 describe('isValidName', () => {
     test('valid names', () => {
-        expect(isValidName({ name: 'Jean' })).toBe(true);
-        expect(isValidName({ name: 'Jean-Pierre' })).toBe(true);
-        expect(isValidName({ name: "D'Artagnan" })).toBe(true);
+        expect(isValidName({name: 'Jean'})).toBe(true);
+        expect(isValidName({name: 'Jean-Pierre'})).toBe(true);
+        expect(isValidName({name: "D'Artagnan"})).toBe(true);
     });
 
     test('invalid names', () => {
-        expect(isValidName({ name: 'Jean123' })).toBe(false);
-        expect(isValidName({ name: '' })).toBe(false);
+        expect(isValidName({name: 'Jean123'})).toBe(false);
+        expect(isValidName({name: ''})).toBe(false);
     });
 
     test('throws if param is invalid', () => {
         expect(() => isValidName(null)).toThrowError('paramètre invalide pour isValidName');
         expect(() => isValidName({})).toThrowError('paramètre invalide pour isValidName');
-        expect(() => isValidName({ name: 123 })).toThrowError('paramètre invalide pour isValidName');
+        expect(() => isValidName({name: 123})).toThrowError('paramètre invalide pour isValidName');
     });
 });
 
 describe('isValidSurname', () => {
     test('valid surnames', () => {
-        expect(isValidSurname({ name: 'Jean' })).toBe(true);
-        expect(isValidSurname({ name: 'Jean-Pierre' })).toBe(true);
-        expect(isValidSurname({ name: "D'Artagnan" })).toBe(true);
+        expect(isValidSurname({surname: 'Jean'})).toBe(true);
+        expect(isValidSurname({surname: 'Jean-Pierre'})).toBe(true);
+        expect(isValidSurname({surname: "D'Artagnan"})).toBe(true);
     });
 
     test('invalid surnames', () => {
-        expect(isValidSurname({ name: 'Jean123' })).toBe(false);
-        expect(isValidSurname({ name: '' })).toBe(false);
+        expect(isValidSurname({surname: 'Jean123'})).toBe(false);
+        expect(isValidSurname({surname: ''})).toBe(false);
     });
 
     test('throws if param is invalid', () => {
         expect(() => isValidSurname(null)).toThrowError('paramètre invalide pour isValidSurname');
         expect(() => isValidSurname({})).toThrowError('paramètre invalide pour isValidSurname');
-        expect(() => isValidSurname({ name: 123 })).toThrowError('paramètre invalide pour isValidSurname');
+        expect(() => isValidSurname({surname: 123})).toThrowError('paramètre invalide pour isValidSurname');
     });
 });
 
 describe('isValidEmail', () => {
     test('valid emails', () => {
-        expect(isValidEmail({ email: 'test@example.com' })).toBe(true);
+        expect(isValidEmail({email: 'test@example.com'})).toBe(true);
     });
 
     test('invalid emails', () => {
-        expect(isValidEmail({ email: 'testexample.com' })).toBe(false);
-        expect(isValidEmail({ email: 'test@' })).toBe(false);
+        expect(isValidEmail({email: 'testexample.com'})).toBe(false);
+        expect(isValidEmail({email: 'test@'})).toBe(false);
     });
 
     test('throws if param is invalid', () => {
         expect(() => isValidEmail(null)).toThrowError('paramètre invalide pour isValidEmail');
         expect(() => isValidEmail({})).toThrowError('paramètre invalide pour isValidEmail');
-        expect(() => isValidEmail({ email: 123 })).toThrowError('paramètre invalide pour isValidEmail');
+        expect(() => isValidEmail({email: 123})).toThrowError('paramètre invalide pour isValidEmail');
     });
 });
 
 describe('isValidCity', () => {
     test('valid city', () => {
-        expect(isValidSurname({ name: 'Jean' })).toBe(true);
-        expect(isValidSurname({ name: 'Jean-Pierre' })).toBe(true);
-        expect(isValidSurname({ name: "D'Artagnan" })).toBe(true);
+        expect(isValidCity({city: 'Paris'})).toBe(true);
+        expect(isValidCity({city: 'Saint-Jean'})).toBe(true);
+        expect(isValidCity({city: "D'e"})).toBe(true);
     });
 
     test('invalid city', () => {
-        expect(isValidSurname({ name: 'Jean123' })).toBe(false);
-        expect(isValidSurname({ name: '' })).toBe(false);
+        expect(isValidCity({city: 'Nice123'})).toBe(false);
+        expect(isValidCity({city: ''})).toBe(false);
     });
 
     test('throws if param is invalid', () => {
-        expect(() => isValidSurname(null)).toThrowError('paramètre invalide pour isValidCity');
-        expect(() => isValidSurname({})).toThrowError('paramètre invalide pour isValidCity');
-        expect(() => isValidSurname({ name: 123 })).toThrowError('paramètre invalide pour isValidCity');
+        expect(() => isValidCity(null)).toThrowError('paramètre invalide pour isValidCity');
+        expect(() => isValidCity({})).toThrowError('paramètre invalide pour isValidCity');
+        expect(() => isValidCity({city: 123})).toThrowError('paramètre invalide pour isValidCity');
     });
 });
 
 describe('isValidPostalCode', () => {
     test('valid postal code', () => {
-        expect(isValidPostalCode({ postalCode: '75000' })).toBe(true);
+        expect(isValidPostalCode({postalCode: '75000'})).toBe(true);
     });
 
     test('invalid postal code', () => {
-        expect(isValidPostalCode({ postalCode: '7500' })).toBe(false);
-        expect(isValidPostalCode({ postalCode: '750001' })).toBe(false);
-        expect(isValidPostalCode({ postalCode: 'ABCDE' })).toBe(false);
+        expect(isValidPostalCode({postalCode: '7500'})).toBe(false);
+        expect(isValidPostalCode({postalCode: '750001'})).toBe(false);
+        expect(isValidPostalCode({postalCode: 'ABCDE'})).toBe(false);
     });
 
     test('throws if param is invalid', () => {
         expect(() => isValidPostalCode(null)).toThrowError('paramètre invalide pour isValidPostalCode');
         expect(() => isValidPostalCode({})).toThrowError('paramètre invalide pour isValidPostalCode');
-        expect(() => isValidPostalCode({ postalCode: 75000 })).toThrowError('paramètre invalide pour isValidPostalCode');
+        expect(() => isValidPostalCode({postalCode: 75000})).toThrowError('paramètre invalide pour isValidPostalCode');
     });
 });
 
@@ -96,7 +96,7 @@ let people20years;
 beforeEach(() => {
     let date = new Date();
     people20years = {
-        birth: new Date(date.setFullYear(date.getFullYear() - 20))
+        birthDate: new Date(date.setFullYear(date.getFullYear() - 20))
     };
 })
 
@@ -120,15 +120,14 @@ describe('calculateAge', () => {
     });
 
     it('should throw an error if birth is not a Date', () => {
-        expect(() => calculateAge({birth: "1990-01-01"})).toThrow("birth must be a Date");
-        expect(() => calculateAge({birth: 123456789})).toThrow("birth must be a Date");
+        expect(() => calculateAge({birthDate: "1990-01-01"})).toThrow("birth must be a Date");
+        expect(() => calculateAge({birthDate: 123456789})).toThrow("birth must be a Date");
     });
 
     it('should work next year without modifying the test', () => {
         const currentYear = new Date().getFullYear();
-        const birth = new Date(currentYear - 20, 0, 1);
-        const person = { birth };
-        const expectedAge = new Date().getFullYear() - birth.getFullYear();
-        expect(calculateAge(person)).toBe(expectedAge);
+        const birthDate = new Date(currentYear - 20, 1, 1);
+        const expectedAge = new Date().getFullYear() - birthDate.getFullYear();
+        expect(calculateAge( {birthDate: birthDate})).toBe(expectedAge);
     });
 });

@@ -4,13 +4,17 @@ const UserList = ({users}) => {
     return (
         <div>
             <h3>Liste des inscrits</h3>
-            <ul>
-                {users.map((user, index) => (
-                    <li key={index}>
-                        {user.name} {user.surname} - {user.email}
-                    </li>
-                ))}
-            </ul>
+            {users.length === 0 ? (
+                <p>Aucun utilisateur inscrit.</p>
+            ) : (
+                <ul>
+                    {users.map((user, index) => (
+                        <li key={index}>
+                            {user.name} {user.surname} - {user.email}
+                        </li>
+                    ))}
+                </ul>
+            )}
         </div>
     );
 };
