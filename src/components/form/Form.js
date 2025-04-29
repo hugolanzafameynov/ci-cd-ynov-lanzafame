@@ -82,7 +82,7 @@ function Form({addUser}) {
         }
 
         localStorage.setItem('users', JSON.stringify(p));
-        success.message = "Enregistrement réussi !";
+        setSuccess({message: "Formulaire soumis avec succès !"});
         addUser(p);
 
         // Reset form data
@@ -97,7 +97,7 @@ function Form({addUser}) {
     };
 
     useEffect(() => {
-        const isFormValid =  Object.values(formData).every((value) => value !== "")
+        const isFormValid = Object.values(formData).every((value) => value !== "")
             && Object.values(errors).every(error => error === "");
         setIsValid(isFormValid);
     }, [formData, errors]);
