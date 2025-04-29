@@ -6,7 +6,7 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-    
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   build_test:
@@ -15,22 +15,78 @@ jobs:
     
     strategy:
       matrix:
-       node-version: [20.x, 21.x]
-       
+        node-version: [ 20.x, 21.x ]
+
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+
       - name: npm ci, build and test
-        run: |          
+        run: |
           npm ci
           npm run build --if-present
           npm test
+
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Authenticate with npm
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
+      - name: Get current version from npm registry
+        run: |
+          VERSION_ON_NPM=$(npm show <ci-cd-ynov> version || echo "0.0.0")
+          echo "Current version on npm: $VERSION_ON_NPM"
+          echo "CURRENT_VERSION=$VERSION_ON_NPM" >> $GITHUB_ENV
+
+      - name: Build and publish package if version has changed
+        run: |
+          CURRENT_LOCAL_VERSION=$(node -p "require('./package.json').version")
+          echo "Current local version: $CURRENT_LOCAL_VERSION"
+
+          if [ "$CURRENT_LOCAL_VERSION" != "$CURRENT_VERSION" ]; then
+            echo "New version detected. Publishing..."
+            npm run build-npm
+            npm publish
+            git config --global user.name "Hugo Lanzafame"
+            git config --global user.email "hugo.lanzafame@ynov.com"
+            git add .
+            git commit -m "updated version to $CURRENT_LOCAL_VERSION"
+            git push
+          else
+            echo "Version is the same. Skipping publish."
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Authenticate with npm
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
+      - name: Check version
+        run: |
+          LOCAL_VERSION=$(node -p "require('./package.json').version")
+          NPM_VERSION=$(npm view ci-cd-ynov version)
+          if [ "$CURRENT_LOCAL_VERSION" != "$CURRENT_VERSION" ]; then
+            echo "NEW_VERSION=TRUE" >> $GITHUB_ENV  
+          else
+            echo "NEW_VERSION=FALSE" >> $GITHUB_ENV
+          fi
+
+      - name: Build and publish package if version has changed
+        if: env.NEW_VERSION == 'TRUE'
+        run: |
+          git config --global user.name "Hugo Lanzafame"
+          git config --global user.email "hugo.lanzafame@ynov.com"
+          npm run build-npm
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
