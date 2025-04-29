@@ -45,9 +45,15 @@ jobs:
         run: |
           LOCAL_VERSION=$(node -p "require('./package.json').version")
           NPM_VERSION=$(npm view ci-cd-ynov version)
-          if [ "$CURRENT_LOCAL_VERSION" != "$CURRENT_VERSION" ]; then
-            echo "NEW_VERSION=TRUE" >> $GITHUB_ENV  
+          
+          echo "Local Version: $LOCAL_VERSION"
+          echo "NPM Version: $NPM_VERSION"
+          
+          if [ "$LOCAL_VERSION" != "$NPM_VERSION" ]; then
+            echo "Version has changed, NEW_VERSION=TRUE"
+            echo "NEW_VERSION=TRUE" >> $GITHUB_ENV
           else
+            echo "Version is the same, NEW_VERSION=FALSE"
             echo "NEW_VERSION=FALSE" >> $GITHUB_ENV
           fi
 
