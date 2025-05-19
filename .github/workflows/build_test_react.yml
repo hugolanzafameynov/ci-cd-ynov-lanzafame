@@ -39,6 +39,8 @@ jobs:
 
       - name: Upload artifact for GitHub Pages
         uses: actions/upload-pages-artifact@v3
+        with:
+          path: build
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
