@@ -35,11 +35,10 @@ jobs:
 
       - name: Setup Pages
         id: pages
-        uses: actions/configure-pages@v3
+        uses: actions/upload-pages-artifact@v3
 
       - name: Upload artifact for GitHub Pages
         uses: actions/upload-artifact@v4
-
         with:
           path: build
 
@@ -61,25 +60,13 @@ jobs:
             echo "NEW_VERSION=FALSE" >> $GITHUB_ENV
           fi
 
-  publish_npm:
-    runs-on: ubuntu-latest
-    needs: build
-    if: needs.build.outputs.NEW_VERSION == 'true'
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Use Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 20.x
-
-      - run: npm ci
-
-      - run: npm run build-npm
-
-      - name: Publish package to npm
-        run: npm publish
+      - name: Build and publish package if version has changed
+        if: env.NEW_VERSION == 'TRUE'
+        run: |
+          git config --global user.name "Hugo Lanzafame"
+          git config --global user.email "hugo.lanzafame@ynov.com"
+          npm run build-npm
+          npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -97,9 +84,9 @@ jobs:
       id-token: write
 
     # Add a dependency to the build job
-    needs: publish_npm
+    needs: build
     # Specify runner + deployment step
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4
