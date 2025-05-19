@@ -1,6 +1,6 @@
 {
   "name": "ci-cd-ynov-lanzafame",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "private": false,
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
