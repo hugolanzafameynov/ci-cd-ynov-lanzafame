@@ -1,6 +1,6 @@
 {
   "name": "ci-cd-ynov-lanzafame",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "private": false,
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
@@ -52,7 +52,7 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/plugin-transform-react-jsx": "^7.25.7",
     "@babel/preset-env": "^7.23.9",
-    "cypress": "^13.6.6",
+    "cypress": "^13.17.0",
     "gh-pages": "^6.3.0",
     "jsdoc": "^4.0.4",
     "react-test-renderer": "^18.2.0"
