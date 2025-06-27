@@ -2,14 +2,15 @@ name: Deploy Frontend to GitHub Pages
 
 # Déclencheurs du workflow
 on:
-  # Déclenchement automatique sur push vers main
+  # Déclenchement automatique sur push vers master
   push:
-    branches: [ main ]
+    branches: [ master ]
     paths: 
       - 'src/**'
       - 'public/**'
       - 'package.json'
       - 'package-lock.json'
+      - '.github/workflows/**'
   
   # Déclenchement manuel
   workflow_dispatch:
