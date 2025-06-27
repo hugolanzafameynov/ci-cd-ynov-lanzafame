@@ -81,7 +81,9 @@ function Form({addUser}) {
             return;
         }
 
-        localStorage.setItem('users', JSON.stringify(p));
+        const users = JSON.parse(localStorage.getItem('users') || '[]');
+        users.push(p);
+        localStorage.setItem('users', JSON.stringify(users));
         setSuccess({message: "Enregistrement réussi !"});
         addUser(p);
 

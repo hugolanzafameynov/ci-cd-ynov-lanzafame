@@ -4,12 +4,8 @@
  * @param p
  * @return {boolean}
  */
-function isValidName(p) {
-    if (!p || typeof p !== 'object' || Array.isArray(p) || typeof p.name !== 'string') {
-        throw new Error("paramètre invalide pour isValidName");
-    }
-
-    return /^[A-Za-zÀ-ÖØ-öø-ÿ '-]+$/.test(p.name.trim());
+export function isValidName({name}) {
+    return typeof name === 'string' && /^[A-Za-zÀ-ÖØ-öø-ÿ\- ]{2,}$/.test(name.trim());
 }
 
 /**
@@ -18,12 +14,8 @@ function isValidName(p) {
  * @param p
  * @return {boolean}
  */
-function isValidSurname(p) {
-    if (!p || typeof p !== 'object' || Array.isArray(p) || typeof p.surname !== 'string') {
-        throw new Error("paramètre invalide pour isValidSurname");
-    }
-
-    return /^[A-Za-zÀ-ÖØ-öø-ÿ '-]+$/.test(p.surname.trim());
+export function isValidSurname({surname}) {
+    return typeof surname === 'string' && /^[A-Za-zÀ-ÖØ-öø-ÿ\- ]{2,}$/.test(surname.trim());
 }
 
 /**
@@ -32,12 +24,8 @@ function isValidSurname(p) {
  * @param p
  * @return {boolean}
  */
-function isValidEmail(p) {
-    if (!p || typeof p !== 'object' || Array.isArray(p) || typeof p.email !== 'string') {
-        throw new Error("paramètre invalide pour isValidEmail");
-    }
-
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email.trim());
+export function isValidEmail({email}) {
+    return typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 }
 
 /**
@@ -46,12 +34,8 @@ function isValidEmail(p) {
  * @param p
  * @return {boolean}
  */
-function isValidCity(p) {
-    if (!p || typeof p !== 'object' || Array.isArray(p) || typeof p.city !== 'string') {
-        throw new Error("paramètre invalide pour isValidCity");
-    }
-
-    return /^[A-Za-zÀ-ÖØ-öø-ÿ '-]+$/.test(p.city.trim());
+export function isValidCity({city}) {
+    return typeof city === 'string' && city.trim().length > 1;
 }
 
 /**
@@ -60,12 +44,8 @@ function isValidCity(p) {
  * @param p
  * @return {boolean}
  */
-function isValidPostalCode(p) {
-    if (!p || typeof p !== 'object' || Array.isArray(p) || typeof p.postalCode !== 'string') {
-        throw new Error("paramètre invalide pour isValidPostalCode");
-    }
-
-    return /^[0-9]{5}$/.test(p.postalCode.trim());
+export function isValidPostalCode({postalCode}) {
+    return typeof postalCode === 'string' && /^[0-9]{5}$/.test(postalCode) && parseInt(postalCode, 10) >= 1000 && parseInt(postalCode, 10) <= 99999;
 }
 
 /**
@@ -74,27 +54,14 @@ function isValidPostalCode(p) {
  * @param {object} p An object representing a person, implementing a birth Date parameter.
  * @return {number} The age in years of p.
  */
-function calculateAge(p) {
-    if (!p) {
-        throw new Error("missing param p")
+export function calculateAge({birthDate}) {
+    if (!birthDate || isNaN(new Date(birthDate).getTime())) return 0;
+    const now = new Date();
+    const dob = new Date(birthDate);
+    let age = now.getFullYear() - dob.getFullYear();
+    const m = now.getMonth() - dob.getMonth();
+    if (m < 0 || (m === 0 && now.getDate() < dob.getDate())) {
+        age--;
     }
-
-    if (typeof p !== 'object' || Array.isArray(p)) {
-        throw new Error("param p must be an object");
-    }
-
-    if (!('birthDate' in p)) {
-        throw new Error("missing birth property in param p");
-    }
-
-    if (!(p.birthDate instanceof Date)) {
-        throw new Error("birth must be a Date");
-    }
-
-    let dateDiff = new Date(Date.now() - p.birthDate.getTime())
-    let age = Math.abs(dateDiff.getUTCFullYear() - 1970);
-
     return age;
 }
-
-export {isValidName, isValidSurname, isValidEmail, isValidCity, isValidPostalCode, calculateAge}

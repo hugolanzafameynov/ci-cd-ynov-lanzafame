@@ -1,104 +1,185 @@
-# Getting Started with Create React App
+# 🚀 Application React - Gestion d'Utilisateurs
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+[![GitHub Pages](https://img.shields.io/badge/deployed%20on-GitHub%20Pages-blue)](https://hugolanzafame.github.io/ci-cd-ynov-lanzafame)
+[![React](https://img.shields.io/badge/React-18.x-blue?logo=react)](https://reactjs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-green?logo=node.js)](https://nodejs.org/)
 
-## Available Scripts
+Cette application React moderne propose une interface utilisateur complète pour la gestion d'utilisateurs, avec authentification sécurisée et panneau d'administration. L'application est déployée automatiquement sur GitHub Pages et communique avec une API backend hébergée sur Vercel.
 
-In the project directory, you can run:
+## Architecture
 
-### `npm start`
+```
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│   React App     │────│    API Vercel    │────│   Aiven MySql   │
+│ (GitHub Pages)  │    │   (Backend API)  │    │    (Cloud)      │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+**Stack Technique :**
+- **Frontend** : React 18, React Router, Axios
+- **Backend** : API REST déployée sur Vercel
+- **Base de données** : MySQL Cloud (Aiven)
+- **Déploiement** : GitHub Pages avec GitHub Actions
+- **Authentification** : JWT tokens
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Démarrage rapide
 
-### `npm test`
+### Prérequis
+- Node.js 18+ et npm
+- Compte GitHub pour le déploiement
+- API backend accessible (voir repository séparé)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more
-information.
+### Installation locale
 
-### `npm run build`
+```bash
+# 1. Cloner le projet
+git clone https://github.com/hugolanzafameynov/ci-cd-ynov-lanzafame.git
+cd ci-cd-ynov-lanzafame
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+# 2. Installer les dépendances
+npm install
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+# 3. Configurer l'environnement
+cp .env.example .env
+# Éditer .env avec l'URL de votre API
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# 4. Démarrer en mode développement
+npm start
+```
 
-### `npm run eject`
+L'application sera accessible sur `http://localhost:3000`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## ⚙️ Configuration
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will
-remove the single build dependency from your project.
+### Variables d'environnement
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right
-into your project so you have full control over them. All of the commands except `eject` will still work, but they will
-point to the copied scripts so you can tweak them. At this point you're on your own.
+```bash
+# .env
+REACT_APP_API_URL=https://votre-api.vercel.app
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you
-shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't
-customize it when you are ready for it.
+### Scripts disponibles
 
-## Learn More
+```bash
+npm start             # Développement (port 3000)
+npm test              # Tests avec Jest
+npm run test:coverage # Tests avec couverture
+npm run build         # Build de production
+npm run deploy        # Déploiement GitHub Pages
+npm run cypress       # Tests E2E avec Cypress
+npm run jsdoc         # Génération documentation
+```
 
-You can learn more in
-the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🧪 Tests et Qualité
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Tests automatisés
+- **Tests unitaires** : Jest + Testing Library
+- **Tests d'intégration** : Formulaires et navigation
+- **Tests E2E** : Cypress pour les parcours utilisateur
+- **Couverture de code** : >90% sur les composants critiques
 
-### Code Splitting
+```bash
+# Lancer tous les tests
+npm test
 
-This section has moved
-here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+# Tests avec couverture
+npm run test:coverage
 
-### Analyzing the Bundle Size
+# Tests E2E
+npm run cypress
+```
 
-This section has moved
-here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## 📁 Structure du projet
 
-### Making a Progressive Web App
+```
+src/
+├── components/              # Composants React
+│   ├── auth/               # Authentification
+│   │   ├── Login.js        # Formulaire de connexion
+│   │   ├── Register.js     # Formulaire d'inscription
+│   │   └── Auth.css        # Styles auth
+│   ├── dashboard/          # Tableau de bord
+│   │   ├── Dashboard.js    # Composant principal
+│   │   └── Dashboard.css   # Styles dashboard
+│   ├── userlist/           # Gestion utilisateurs
+│   │   ├── UserList.js     # Liste des utilisateurs
+│   │   └── UserList.css    # Styles liste
+│   ├── form/               # Formulaires génériques
+│   │   ├── Form.js         # Composant formulaire
+│   │   └── Form.test.js    # Tests formulaire
+│   └── common/             # Composants partagés
+│       ├── ProtectedRoute.js # Routes protégées
+│       └── Common.css      # Styles communs
+├── contexts/               # Context API React
+│   └── AuthContext.js      # Contexte authentification
+├── services/               # Services externes
+│   └── api.js              # Client API (Axios)
+├── App.js                  # Composant racine
+├── App.css                 # Styles globaux
+├── index.js                # Point d'entrée
+└── module.js               # Fonctions utilitaires
+```
 
-This section has moved
-here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## 🔌 API Integration
 
-### Advanced Configuration
+### Endpoints utilisés
 
-This section has moved
-here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+```javascript
+// Authentification
+POST /v1/login              // Connexion utilisateur
+POST /v1/users              // Inscription utilisateur
 
-### Deployment
+// Gestion utilisateurs
+GET  /v1/users              // Liste des utilisateurs (admin)
+DELETE /v1/users/{id}       // Suppression utilisateur (admin)
+```
 
-This section has moved
-here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### Format des données
 
-### `npm run build` fails to minify
+**Inscription utilisateur :**
+```json
+{
+  "username": "user@example.com",
+  "password": "motdepasse123",
+  "name": "Prénom",
+  "last_name": "Nom de famille"
+}
+```
 
-This section has moved
-here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-0.1.2-8005926928-41-1.0
-0.1.2-8006167023-42-1.0
-0.1.2-8006278906-44-1.0
-0.1.2-8020085332-45-1.0
-0.1.2-8020270501-46-1.0
-0.1.2-8020359706-47-1.0
-0.1.2-8020417416-48-1.0
-0.1.2-8020457083-49-1.0
-0.1.2-8020495936-50-1.0
-0.1.2-8020596252-51-1.0
-0.1.2-8020624614-52-1.0
-0.1.2-8020673050-53-1.0
-0.1.2-8020710828-54-1.0
-0.1.2-8020741002-55-1.0
-0.1.2-8020814725-57-1.0
-0.1.2-8102658842-61-1.0
-0.1.2-8102863517-64-1.0
-0.1.2-8103054464-65-1.0
-0.1.2-8103377852-66-1.0
-0.1.2-8133232161-67-1.0
-0.1.2-8143757907-70-1.0
+**Connexion :**
+```json
+{
+  "username": "user@example.com",
+  "password": "motdepasse123"
+}
+```
+
+## Compte de test
+
+Pour tester l'application, utilisez le compte administrateur :
+
+```
+Email: loise.fenoll@ynov.com
+Mot de passe: PvdrTAzTeR247sDnAZBr
+```
+
+## Déploiement en production
+
+### GitHub Pages (automatique)
+
+Le déploiement se fait automatiquement via GitHub Actions :
+
+1. **Push** sur la branche `main`
+2. **Build** automatique de l'application
+3. **Tests** de validation
+4. **Déploiement** sur GitHub Pages
+
+### Configuration manuelle
+
+```bash
+# Build de production
+npm run build
+
+# Déploiement manuel
+npm run deploy
+```
