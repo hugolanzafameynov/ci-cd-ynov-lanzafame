@@ -12,19 +12,6 @@ const UserList = ({ users, onDeleteUser, showActions = false }) => {
         );
     }
 
-    const formatDate = (dateString) => {
-        if (!dateString) return 'Non spécifié';
-        try {
-            return new Date(dateString).toLocaleDateString('fr-FR', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-        } catch (error) {
-            return 'Date invalide';
-        }
-    };
-
     return (
         <div className="user-list">
             <div className="users-grid">

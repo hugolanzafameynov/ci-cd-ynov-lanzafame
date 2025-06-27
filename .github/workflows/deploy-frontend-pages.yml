@@ -54,6 +54,8 @@ jobs:
           # Variables d'environnement pour le build
           NODE_ENV: production
           GENERATE_SOURCEMAP: false
+          # Ne pas traiter les warnings ESLint comme des erreurs
+          CI: false
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

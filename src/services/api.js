@@ -33,7 +33,9 @@ const handleColdStart = async (apiCall, retryCount = 0, maxRetries = 2) => {
                     `Erreur ${error.response?.status}: ${error.response?.statusText}` ||
                     'Erreur de connexion à l\'API';
     
-    throw { error: errorMsg, originalError: error };
+    const customError = new Error(errorMsg);
+    customError.originalError = error;
+    throw customError;
   }
 };
 
