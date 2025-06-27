@@ -65,13 +65,17 @@ jobs:
         run: npm test -- --coverage --watchAll=false
         env:
           CI: true
+          REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL || 'https://ci-cd-ynov-back-lanzafame.vercel.app' }}
 
       # 5. Build du projet pour la production
       - name: Build project
         run: npm run build
         env:
-          # Utiliser l'API de production Vercel
-          REACT_APP_API_URL: https://ci-cd-ynov-back-lanzafame.vercel.app
+          # Variables d'environnement configurables via GitHub Secrets
+          REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL || 'https://ci-cd-ynov-back-lanzafame.vercel.app' }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY || 'secret' }}
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL || 'loise.fenoll@ynov.com' }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD || 'default-password' }}
           # Variables d'environnement pour le build
           NODE_ENV: production
           GENERATE_SOURCEMAP: false
