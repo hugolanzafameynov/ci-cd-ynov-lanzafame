@@ -106,25 +106,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-  # Job de notification de succès
-  notify:
-    runs-on: ubuntu-latest
-    needs: [test, build, deploy]
-    if: always()
-    
-    steps:
-      - name: Notify deployment status
-        run: |
-          if [ "${{ needs.deploy.result }}" == "success" ]; then
-            echo "Frontend successfully deployed to GitHub Pages!"
-            echo "URL: ${{ needs.deploy.outputs.page_url }}"
-            echo "Tests passed: ${{ needs.test.result }}"
-            echo "Build passed: ${{ needs.build.result }}"
-          else
-            echo "Deployment failed!"
-            echo "Test result: ${{ needs.test.result }}"
-            echo "Build result: ${{ needs.build.result }}"
-            echo "Deploy result: ${{ needs.deploy.result }}"
-            exit 1
-          fi
