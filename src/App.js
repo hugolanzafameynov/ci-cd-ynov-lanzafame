@@ -10,7 +10,7 @@ import './components/common/Common.css';
 const App = () => {
     return (
         <AuthProvider>
-            <Router>
+            <Router basename="/ci-cd-ynov-lanzafame">
                 <div className="App">
                     <Routes>
                         {/* Route par défaut - redirection vers dashboard ou login */}
