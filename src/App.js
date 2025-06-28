@@ -9,7 +9,10 @@ import './components/common/Common.css';
 
 const App = () => {
     // Déterminer le basename en fonction de l'environnement
-    const basename = process.env.NODE_ENV === 'production' && process.env.PUBLIC_URL ? '/ci-cd-ynov-lanzafame' : '';
+    // Pour GitHub Pages, nous avons besoin du basename en production
+    const basename = process.env.NODE_ENV === 'production' && process.env.PUBLIC_URL
+        ? process.env.PUBLIC_URL 
+        : '';
 
     return (
         <AuthProvider>

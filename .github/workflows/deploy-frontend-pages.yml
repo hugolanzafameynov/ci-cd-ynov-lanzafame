@@ -81,6 +81,7 @@ jobs:
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD || 'default-password' }}
           # Variables d'environnement pour le build
           NODE_ENV: production
+          PUBLIC_URL: /ci-cd-ynov-lanzafame
           GENERATE_SOURCEMAP: false
           # Ne pas traiter les warnings ESLint comme des erreurs
           CI: false
