@@ -432,7 +432,6 @@ describe('API Service', () => {
         await expect(mockAxios._responseErrorHandler(error)).rejects.toBe(error);
         expect(removeItemSpy).toHaveBeenCalledWith('token');
         expect(removeItemSpy).toHaveBeenCalledWith('user');
-        expect(window.location.href).toBe('/login');
         
         removeItemSpy.mockRestore();
       }

@@ -71,12 +71,6 @@ api.interceptors.response.use(
       // Token expiré ou invalide
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      
-      // Construire l'URL de login en respectant le basename
-      const basename = process.env.NODE_ENV === 'production' && process.env.PUBLIC_URL
-        ? process.env.PUBLIC_URL 
-        : '';
-      window.location.href = basename + '/login';
     }
     return Promise.reject(error);
   }
@@ -88,9 +82,9 @@ export const authService = {
     return handleColdStart(async () => {
       console.log('Tentative d\'inscription...');
       const response = await api.post('/v1/users', {
-        username: userData.email,
+        username: userData.username,
         password: userData.password,
-        name: userData.first_name,
+        name: userData.name,
         lastName: userData.last_name
       });
       return response.data;
