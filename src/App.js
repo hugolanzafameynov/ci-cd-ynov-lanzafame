@@ -8,9 +8,12 @@ import './App.css';
 import './components/common/Common.css';
 
 const App = () => {
+    // Déterminer le basename en fonction de l'environnement
+    const basename = process.env.NODE_ENV === 'production' && process.env.PUBLIC_URL ? '/ci-cd-ynov-lanzafame' : '';
+
     return (
         <AuthProvider>
-            <Router basename="/ci-cd-ynov-lanzafame">
+            <Router basename={basename}>
                 <div className="App">
                     <Routes>
                         {/* Route par défaut - redirection vers dashboard ou login */}
