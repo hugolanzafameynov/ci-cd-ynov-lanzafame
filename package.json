@@ -23,15 +23,18 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "build-npm": "NODE_ENV=production && rm -rf dist && mkdir dist && npx babel src --out-dir dist --copy-files",
-    "test": "jest --coverage --watchAll=false",
-    "test-ex": "react-scripts test  --coverage --collectCoverageFrom=src/**/*js* --collectCoverageFrom=!src/reportWebVitals.js --collectCoverageFrom=!src/index.js --watchAll=false --setupFiles=./.jest/setEnvVars.js",
+    "test": "react-scripts test --coverage --watchAll=false --collectCoverageFrom=src/**/*.{js,jsx} --collectCoverageFrom=!src/index.js --collectCoverageFrom=!src/reportWebVitals.js --coverageReporters=text-lcov --coverageReporters=lcov --coverageReporters=html",
+    "test:watch": "react-scripts test",
+    "test:coverage": "npm run test -- --coverage --watchAll=false",
+    "test:codecov": "npm run test:coverage && codecov",
+    "test:all": "chmod +x scripts/test-all.sh && ./scripts/test-all.sh",
     "eject": "react-scripts eject",
     "jsdoc": "jsdoc -c ./jsdoc.config.json -r -d ./docs",
     "jsdoc-ex": "jsdoc -R ./README.md -c ./jsdoc.config.json -r -d ./public/docs",
-    "test:coverage": "react-scripts test --coverage --watchAll=false",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "cypress": "cypress open",
+    "cypress:run": "cypress run",
     "api": "node api/index.js"
   },
   "eslintConfig": {
@@ -58,9 +61,13 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/plugin-transform-react-jsx": "^7.25.7",
     "@babel/preset-env": "^7.23.9",
+    "codecov": "^3.8.3",
     "cypress": "^13.17.0",
     "gh-pages": "^6.3.0",
+    "identity-obj-proxy": "^3.0.0",
+    "jest-environment-jsdom": "^29.7.0",
     "jsdoc": "^4.0.4",
+    "msw": "^2.10.2",
     "react-test-renderer": "^18.2.0"
   }
 }

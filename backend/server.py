@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+from init_admin import create_admin
 from src.database import init_db, get_async_session
 from src.models.user import User
 from src.controllers.user_controller import UserController
@@ -14,13 +15,9 @@ from src.middleware.auth import admin_required
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup - Initialiser la DB et créer l'admin
     await init_db()
-    # Importer et exécuter le script d'initialisation admin
-    from init_admin import create_admin
     await create_admin()
     yield
-    # Shutdown (si nécessaire)
 
 app = FastAPI(
     title="API Backend Ynov",

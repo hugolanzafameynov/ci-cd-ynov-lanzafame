@@ -14,10 +14,10 @@ const UserList = ({ users, onDeleteUser, showActions = false }) => {
 
     return (
         <div className="user-list">
-            <div className="users-grid">
+            <div className="users-grid" data-testid="users-grid">
                 {Array.isArray(users) && users.length > 0 ? (
                     users.map((user) => (
-                    <div key={user._id || user.id} className="user-card">
+                    <div key={user._id || user.id} className="user-card" data-testid="user-card">
                         <div className="user-header">
                             <div className="user-info">
                                 <h4>{user.name} {user.lastName || user.last_name}</h4>
@@ -49,6 +49,7 @@ const UserList = ({ users, onDeleteUser, showActions = false }) => {
                                 <button 
                                     onClick={() => onDeleteUser(user._id || user.id)}
                                     className="btn btn-danger btn-sm"
+                                    data-testid="delete-button"
                                     disabled={user.role === 'admin' || user.is_admin}
                                     title={(user.role === 'admin' || user.is_admin) ? "Impossible de supprimer un administrateur" : "Supprimer cet utilisateur"}
                                 >

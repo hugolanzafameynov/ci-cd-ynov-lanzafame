@@ -1,6 +1,5 @@
 import { useState } from 'react';
 
-// Hook personnalisé pour gérer les cold starts
 export const useColdStartApi = () => {
   const [isColdStartLoading, setIsColdStartLoading] = useState(false);
   const [coldStartMessage, setColdStartMessage] = useState('');

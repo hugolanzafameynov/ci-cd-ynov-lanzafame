@@ -45,10 +45,13 @@ const Register = () => {
 
     try {
       const { confirmPassword, ...userData } = formData;
-      console.log('Tentative d\'inscription avec:', userData);
-      
-      const response = await register(userData);
-      console.log('Réponse inscription:', response);
+      const apiData = {
+        username: userData.email,
+        password: userData.password,
+        name: userData.first_name,
+        last_name: userData.last_name
+      };
+      await register(apiData);
       
       setSuccess(true);
       setTimeout(() => {
@@ -89,6 +92,7 @@ const Register = () => {
                 type="text"
                 id="first_name"
                 name="first_name"
+                data-testid="register-first-name"
                 value={formData.first_name}
                 onChange={handleChange}
                 required
@@ -102,6 +106,7 @@ const Register = () => {
                 type="text"
                 id="last_name"
                 name="last_name"
+                data-testid="register-last-name"
                 value={formData.last_name}
                 onChange={handleChange}
                 required
@@ -116,6 +121,7 @@ const Register = () => {
               type="email"
               id="email"
               name="email"
+              data-testid="register-email"
               value={formData.email}
               onChange={handleChange}
               required
@@ -130,6 +136,7 @@ const Register = () => {
                 type="password"
                 id="password"
                 name="password"
+                data-testid="register-password"
                 value={formData.password}
                 onChange={handleChange}
                 required
@@ -143,6 +150,7 @@ const Register = () => {
                 type="password"
                 id="confirmPassword"
                 name="confirmPassword"
+                data-testid="register-confirm-password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
@@ -154,6 +162,7 @@ const Register = () => {
           <button 
             type="submit" 
             className="btn btn-primary"
+            data-testid="register-submit-button"
             disabled={loading}
           >
             {loading ? 'Inscription...' : 'S\'inscrire'}

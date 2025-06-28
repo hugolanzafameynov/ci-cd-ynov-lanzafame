@@ -49,6 +49,7 @@ const Login = () => {
               type="email"
               id="email"
               name="email"
+              data-testid="login-email"
               value={credentials.email}
               onChange={handleChange}
               required
@@ -62,6 +63,7 @@ const Login = () => {
               type="password"
               id="password"
               name="password"
+              data-testid="login-password"
               value={credentials.password}
               onChange={handleChange}
               required
@@ -72,6 +74,7 @@ const Login = () => {
           <button 
             type="submit" 
             className="btn btn-primary"
+            data-testid="login-submit-button"
             disabled={loading}
           >
             {loading ? 'Connexion...' : 'Se connecter'}

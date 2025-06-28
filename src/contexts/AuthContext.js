@@ -1,7 +1,9 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { authService } from '../services/api';
 
 const AuthContext = createContext();
+
+export { AuthContext };
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -16,7 +18,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Vérifier si l'utilisateur est déjà connecté au chargement de la page
     const checkAuth = () => {
       try {
         const currentUser = authService.getCurrentUser();
@@ -37,26 +38,15 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authService.login(credentials);
       
-      // Debug: afficher la réponse complète
-      console.log('Réponse API login:', response);
-      console.log('User data:', response.user);
-      
-      // Adapter la structure de l'utilisateur pour votre API FastAPI
       const userInfo = {
         id: response.user?._id || response.user?.id,
         username: response.user?.username,
         name: response.user?.name,
         last_name: response.user?.lastName || response.user?.last_name,
-        email: response.user?.username, // FastAPI utilise username comme email
+        email: response.user?.username,
         is_admin: response.user?.role === 'admin' || response.user?.is_admin || false
       };
-      
-      console.log('User info processed:', userInfo);
-      console.log('Is admin?', userInfo.is_admin);
-      
       setUser(userInfo);
-      
-      // Mettre à jour le localStorage avec la structure adaptée
       localStorage.setItem('user', JSON.stringify(userInfo));
       
       return response;
@@ -67,8 +57,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     try {
-      const response = await authService.register(userData);
-      return response;
+      return await authService.register(userData);
     } catch (error) {
       throw error;
     }

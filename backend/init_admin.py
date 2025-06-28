@@ -17,7 +17,6 @@ async def create_admin():
     """Créer un utilisateur admin par défaut"""
     DATABASE_URL = os.getenv("DATABASE_URL")
     
-    # Créer le moteur et les tables
     engine = create_async_engine(DATABASE_URL)
     async_session = async_sessionmaker(engine, class_=AsyncSession)
     
@@ -33,7 +32,6 @@ async def create_admin():
             admin = result.scalar_one_or_none()
             
             if not admin:
-                # Créer l'utilisateur admin
                 admin_user = User(
                     username="loise.fenoll@ynov.com",
                     password=get_password_hash("PvdrTAzTeR247sDnAZBr"),

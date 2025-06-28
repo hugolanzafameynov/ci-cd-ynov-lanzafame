@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { userService } from '../../services/api';
 import UserList from '../userlist/UserList';
@@ -19,7 +19,7 @@ const Dashboard = () => {
   const fetchUsers = async () => {
     setLoading(true);
     setError('');
-    setUsers([]); // Réinitialiser la liste
+    setUsers([]);
     try {
       const response = await userService.getAllUsers();
       console.log('Response getAllUsers:', response);
@@ -48,14 +48,11 @@ const Dashboard = () => {
       console.log('Suppression de l\'utilisateur ID:', userId);
       await userService.deleteUser(userId);
       setUsers(users.filter(u => (u._id || u.id) !== userId));
-      
-      // Message de succès temporaire
-      setError(`✅ Utilisateur ${userName} supprimé avec succès`);
+      setError(`Utilisateur ${userName} supprimé avec succès`);
       setTimeout(() => setError(''), 3000);
-      
     } catch (error) {
       console.error('Erreur suppression:', error);
-      setError(`❌ Impossible de supprimer ${userName}: ${error.error || error.message}`);
+      setError(`Impossible de supprimer ${userName}: ${error.error || error.message}`);
     } finally {
       setLoading(false);
     }
