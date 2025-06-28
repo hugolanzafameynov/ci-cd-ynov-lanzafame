@@ -112,9 +112,9 @@ describe('API Service', () => {
       mockAxios.post.mockResolvedValueOnce(mockResponse);
 
       const userData = {
-        email: 'test@example.com',
+        username: 'test@example.com',
         password: 'password123',
-        first_name: 'Test',
+        name: 'Test',
         last_name: 'User'
       };
 
