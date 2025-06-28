@@ -49,7 +49,7 @@
     }
   },
   "coverageReporters": [
-    "text",
+    "text-summary",
     "lcov",
     "html",
     "json",
