@@ -71,9 +71,9 @@ describe('Login Component', () => {
   });
 
   test('should show error message on login failure', async () => {
-    const mockLogin = jest.fn().mockRejectedValue({
-      error: 'Invalid credentials'
-    });
+    const mockLogin = jest.fn().mockRejectedValue(
+      new Error('Invalid credentials')
+    );
 
     const authValue = {
       user: null,
@@ -218,7 +218,7 @@ describe('Login Component', () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/erreur lors de la connexion/i)).toBeInTheDocument();
+      expect(screen.getByText(/network error/i)).toBeInTheDocument();
     });
 
     // Form should still have values

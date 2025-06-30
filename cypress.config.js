@@ -5,9 +5,9 @@ module.exports = defineConfig({
     setupNodeEvents(on, config) {
       // implement node event listeners here
     },
-    supportFile: false,
+    supportFile: 'cypress/support/e2e.js',
     specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
-    baseUrl: 'http://localhost:3000',
+    baseUrl: process.env.REACT_APP_URL,
     viewportWidth: 1280,
     viewportHeight: 720,
     video: false,
@@ -17,15 +17,14 @@ module.exports = defineConfig({
     responseTimeout: 10000,
     pageLoadTimeout: 30000,
     env: {
-      // Variables d'environnement pour les tests
-      apiUrl: 'https://ci-cd-ynov-back-lanzafame.vercel.app',
+      apiUrl: process.env.REACT_APP_API_URL,
       testUser: {
         email: 'test@example.com',
         password: 'password123'
       },
       adminUser: {
-        email: 'loise.fenoll@ynov.com',
-        password: 'admin123'
+        email: process.env.ADMIN_EMAIL,
+        password: process.env.ADMIN_PASSWORD
       }
     }
   },

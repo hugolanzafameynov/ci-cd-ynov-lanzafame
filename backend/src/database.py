@@ -2,18 +2,8 @@ import os
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import declarative_base
 
-# Configuration de la base de données
 DATABASE_URL = os.getenv("DATABASE_URL")
-
-# Configuration du moteur avec options pour Aiven
-engine_kwargs = {
-    "echo": True,
-    "pool_pre_ping": True,  # Vérifie la connexion avant utilisation
-    "pool_recycle": 3600,   # Recycle les connexions après 1h
-}
-
-# Création du moteur SQLAlchemy async
-engine = create_async_engine(DATABASE_URL, **engine_kwargs)
+engine = create_async_engine(DATABASE_URL, echo=True)
 AsyncSessionLocal = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 Base = declarative_base()
@@ -22,14 +12,10 @@ Base = declarative_base()
 async def init_db():
     """Initialiser la base de données"""
     try:
-        # Importer les modèles pour s'assurer qu'ils sont enregistrés
-        from src.models.user import User  # Import nécessaire pour créer les tables
-        
-        # Créer les tables si elles n'existent pas
+        from src.models.user import User
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
         print("Connected to MySQL database and tables created")
-        
     except Exception as e:
         print(f"Database connection error: {e}")
         raise e

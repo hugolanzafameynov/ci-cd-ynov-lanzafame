@@ -58,8 +58,7 @@ const Register = () => {
         navigate('/login');
       }, 2000);
     } catch (error) {
-      console.error('Erreur inscription:', error);
-      setError(error.error || error.detail || 'Erreur lors de l\'inscription');
+      setError(error.message || 'Erreur lors de l\'inscription');
     } finally {
       setLoading(false);
     }
@@ -116,7 +115,7 @@ const Register = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="email">Email/Username</label>
+            <label htmlFor="email">Email</label>
             <input
               type="email"
               id="email"

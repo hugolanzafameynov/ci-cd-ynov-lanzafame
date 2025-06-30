@@ -5,19 +5,16 @@ from src.models.user import User, get_password_hash, verify_password, UserRole
 from src.middleware.auth import create_access_token
 
 class UserController:
-    
     async def get_all_users(self, db: AsyncSession) -> dict:
         """Récupérer tous les utilisateurs (sans les mots de passe)"""
         try:
-            # Récupérer tous les utilisateurs
             result = await db.execute(select(User))
             users = result.scalars().all()
-            
-            # Convertir en dictionnaire (sans mot de passe)
             users_list = []
+
             for user in users:
                 user_dict = {
-                    "_id": user.id,  # Utiliser l'ID entier au lieu d'ObjectId
+                    "_id": user.id,
                     "username": user.username,
                     "role": user.role.value,
                     "name": user.name,
@@ -36,14 +33,12 @@ class UserController:
     async def delete_user(self, user_id: int, current_user: User, db: AsyncSession) -> dict:
         """Supprimer un utilisateur"""
         try:
-            # Vérifier que l'admin ne se supprime pas lui-même
             if current_user.id == user_id:
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail="Vous ne pouvez pas vous supprimer vous-même."
                 )
             
-            # Chercher l'utilisateur à supprimer
             result = await db.execute(select(User).where(User.id == user_id))
             user_to_delete = result.scalar_one_or_none()
             
@@ -53,7 +48,6 @@ class UserController:
                     detail="Utilisateur non trouvé."
                 )
             
-            # Supprimer l'utilisateur
             await db.delete(user_to_delete)
             await db.commit()
             
@@ -79,7 +73,6 @@ class UserController:
                     detail="Username et password sont requis"
                 )
             
-            # Chercher l'utilisateur par username
             result = await db.execute(select(User).where(User.username == username))
             user = result.scalar_one_or_none()
             
@@ -95,11 +88,9 @@ class UserController:
                     detail="Mot de passe incorrect"
                 )
             
-            # Créer le token JWT
             token_data = {"id": str(user.id), "role": user.role.value}
             token = create_access_token(data=token_data)
-            
-            # Préparer la réponse utilisateur (sans mot de passe)
+
             user_response = {
                 "_id": user.id,
                 "username": user.username,
@@ -136,7 +127,6 @@ class UserController:
                     detail="Username et password sont requis"
                 )
             
-            # Vérifier si l'utilisateur existe déjà
             result = await db.execute(select(User).where(User.username == username))
             existing_user = result.scalar_one_or_none()
             
@@ -146,10 +136,8 @@ class UserController:
                     detail="Ce nom d'utilisateur existe déjà"
                 )
             
-            # Hasher le mot de passe
+
             hashed_password = get_password_hash(password)
-            
-            # Créer l'utilisateur
             new_user = User(
                 username=username,
                 password=hashed_password,
@@ -162,7 +150,6 @@ class UserController:
             await db.commit()
             await db.refresh(new_user)  # Pour récupérer l'ID généré
             
-            # Préparer la réponse (sans mot de passe)
             user_response = {
                 "_id": new_user.id,
                 "username": new_user.username,

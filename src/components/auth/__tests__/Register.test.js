@@ -100,9 +100,9 @@ describe('Register Component', () => {
   });
 
   test('should show error message on registration failure', async () => {
-    const mockRegister = jest.fn().mockRejectedValue({
-      error: 'Email already exists'
-    });
+    const mockRegister = jest.fn().mockRejectedValue(
+      new Error('Email already exists')
+    );
 
     const authValue = {
       user: null,

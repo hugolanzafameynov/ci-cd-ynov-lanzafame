@@ -134,7 +134,7 @@ describe('App Integration Tests', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText(/erreur lors de la connexion/i)).toBeInTheDocument();
+      expect(screen.getByText(/invalid credentials/i)).toBeInTheDocument();
     }, { timeout: 3000 });
   });
 

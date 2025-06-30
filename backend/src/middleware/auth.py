@@ -6,11 +6,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 import os
 from typing import Optional
-
 from src.database import get_async_session
 from src.models.user import User
 
-# Configuration JWT
 SECRET_KEY = os.getenv("JWT_SECRET")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_DAYS = 1
@@ -48,10 +46,7 @@ async def get_current_user(
         raise credentials_exception
     
     try:
-        # Convertir l'ID en entier (MySQL utilise des entiers, pas des strings)
         user_id_int = int(user_id)
-        
-        # Chercher l'utilisateur dans la base
         result = await db.execute(select(User).where(User.id == user_id_int))
         user = result.scalar_one_or_none()
         
@@ -60,7 +55,6 @@ async def get_current_user(
         
         return user
     except ValueError:
-        # Si la conversion en int échoue
         raise credentials_exception
     except Exception as e:
         raise HTTPException(

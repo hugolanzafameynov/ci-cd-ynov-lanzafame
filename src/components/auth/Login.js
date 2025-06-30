@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import './Auth.css';
@@ -30,7 +30,7 @@ const Login = () => {
       await login(credentials);
       navigate('/dashboard');
     } catch (error) {
-      setError(error.error || 'Erreur lors de la connexion');
+      setError(error.message || 'Erreur lors de la connexion');
     } finally {
       setLoading(false);
     }
@@ -86,12 +86,6 @@ const Login = () => {
             Pas encore de compte ?{' '}
             <Link to="/register">S'inscrire</Link>
           </p>
-        </div>
-
-        <div className="demo-credentials">
-          <h4>Compte administrateur par défaut :</h4>
-          <p><strong>Username:</strong> loise.fenoll@ynov.com</p>
-          <p><strong>Password:</strong> PvdrTAzTeR247sDnAZBr</p>
         </div>
       </div>
     </div>

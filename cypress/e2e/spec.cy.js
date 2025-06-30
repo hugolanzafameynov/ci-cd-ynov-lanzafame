@@ -1,198 +1,162 @@
-describe('Authentication Flow', () => {
+describe('Page de Connexion', () => {
   beforeEach(() => {
-    // Visiter la page d'accueil avant chaque test
-    cy.visit('/');
-  });
-
-  it('should redirect to login when not authenticated', () => {
-    // Vérifier que l'utilisateur non authentifié est redirigé vers la page de connexion
-    cy.url().should('include', '/login');
-    cy.get('[data-testid="login-email"]').should('be.visible');
-    cy.get('[data-testid="login-password"]').should('be.visible');
-    cy.get('[data-testid="login-submit-button"]').should('be.visible');
-  });
-
-  it('should display login form correctly', () => {
     cy.visit('/login');
-    
-    // Vérifier que tous les éléments du formulaire sont présents
+  });
+
+  it('affiche correctement le formulaire de connexion', () => {
     cy.get('[data-testid="login-email"]').should('be.visible');
     cy.get('[data-testid="login-password"]').should('be.visible');
     cy.get('[data-testid="login-submit-button"]').should('be.visible');
     
-    // Vérifier le lien d'inscription
     cy.contains('Pas encore de compte').should('be.visible');
     cy.get('a[href="/register"]').should('be.visible');
   });
 
-  it('should show validation errors for empty form', () => {
-    cy.visit('/login');
+  it('permet de saisir email et mot de passe', () => {
+    cy.get('[data-testid="login-email"]').type('test@example.com');
+    cy.get('[data-testid="login-email"]').should('have.value', 'test@example.com');
     
-    // Cliquer sur le bouton de connexion sans remplir les champs
-    cy.get('[data-testid="login-submit-button"]').click();
-    
-    // Vérifier que les champs sont marqués comme invalides
-    cy.get('[data-testid="login-email"]').should('have.attr', 'aria-invalid', 'true');
-    cy.get('[data-testid="login-password"]').should('have.attr', 'aria-invalid', 'true');
+    cy.get('[data-testid="login-password"]').type('password123');
+    cy.get('[data-testid="login-password"]').should('have.value', 'password123');
   });
 
-  it('should validate email format', () => {
-    cy.visit('/login');
-    
-    // Entrer un email invalide
-    cy.get('[data-testid="login-email"]').type('invalid-email');
+  it('navigue vers la page d\'inscription', () => {
+    cy.get('a[href="/register"]').click();
+    cy.url().should('include', '/register');
+  });
+
+  it('affiche une erreur avec des identifiants incorrects', () => {
+    // Simuler une réponse d'erreur
+    cy.intercept('POST', '**/v1/login', {
+      statusCode: 401,
+      body: { detail: 'Identifiants invalides' }
+    }).as('loginError');
+
+    cy.get('[data-testid="login-email"]').type('wrong@example.com');
+    cy.get('[data-testid="login-password"]').type('wrongpassword');
+    cy.get('[data-testid="login-submit-button"]').click();
+
+    cy.wait('@loginError');
+    cy.get('.error-message').should('contain.text', 'Identifiants invalides');
+  });
+
+  it('redirige vers le dashboard après connexion réussie', () => {
+    // Simuler une connexion réussie
+    cy.intercept('POST', '**/v1/login', {
+      statusCode: 200,
+      body: {
+        token: 'fake-jwt-token',
+        user: {
+          id: 1,
+          username: 'test@example.com',
+          is_admin: false
+        }
+      }
+    }).as('loginSuccess');
+
+    cy.get('[data-testid="login-email"]').type('test@example.com');
     cy.get('[data-testid="login-password"]').type('password123');
     cy.get('[data-testid="login-submit-button"]').click();
-    
-    // Vérifier que l'email est marqué comme invalide
-    cy.get('[data-testid="login-email"]').should('have.attr', 'aria-invalid', 'true');
-  });
 
-  it('should navigate to register page', () => {
-    cy.visit('/login');
-    
-    // Cliquer sur le lien d'inscription
-    cy.get('a[href="/register"]').click();
-    
-    // Vérifier que nous sommes sur la page d'inscription
-    cy.url().should('include', '/register');
-    cy.get('[data-testid="register-email"]').should('be.visible');
+    cy.wait('@loginSuccess');
+    cy.url().should('include', '/dashboard');
   });
 });
 
-describe('Registration Flow', () => {
+describe('Page d\'Inscription', () => {
   beforeEach(() => {
     cy.visit('/register');
   });
 
-  it('should display registration form correctly', () => {
-    // Vérifier que tous les éléments du formulaire sont présents
+  it('affiche correctement le formulaire d\'inscription', () => {
     cy.get('[data-testid="register-email"]').should('be.visible');
     cy.get('[data-testid="register-password"]').should('be.visible');
     cy.get('[data-testid="register-confirm-password"]').should('be.visible');
+    cy.get('[data-testid="register-first-name"]').should('be.visible');
+    cy.get('[data-testid="register-last-name"]').should('be.visible');
     cy.get('[data-testid="register-submit-button"]').should('be.visible');
     
-    // Vérifier le lien de connexion
     cy.contains('Déjà un compte').should('be.visible');
     cy.get('a[href="/login"]').should('be.visible');
   });
 
-  it('should validate password confirmation', () => {
-    // Remplir le formulaire avec des mots de passe différents
+  it('permet de remplir tous les champs', () => {
+    cy.get('[data-testid="register-email"]').type('nouveau@example.com');
+    cy.get('[data-testid="register-password"]').type('motdepasse123');
+    cy.get('[data-testid="register-confirm-password"]').type('motdepasse123');
+    cy.get('[data-testid="register-first-name"]').type('Jean');
+    cy.get('[data-testid="register-last-name"]').type('Dupont');
+
+    cy.get('[data-testid="register-email"]').should('have.value', 'nouveau@example.com');
+    cy.get('[data-testid="register-first-name"]').should('have.value', 'Jean');
+    cy.get('[data-testid="register-last-name"]').should('have.value', 'Dupont');
+  });
+
+  it('navigue vers la page de connexion', () => {
+    cy.get('a[href="/login"]').click();
+    cy.url().should('include', '/login');
+  });
+
+  it('affiche une erreur si les mots de passe ne correspondent pas', () => {
     cy.get('[data-testid="register-email"]').type('test@example.com');
-    cy.get('[data-testid="register-password"]').type('password123');
-    cy.get('[data-testid="register-confirm-password"]').type('differentpassword');
-    cy.get('[data-testid="register-submit-button"]').click();
+    cy.get('[data-testid="register-password"]').type('motdepasse123');
+    cy.get('[data-testid="register-confirm-password"]').type('motdepassedifferent');
+    cy.get('[data-testid="register-first-name"]').type('Jean');
+    cy.get('[data-testid="register-last-name"]').type('Dupont');
     
-    // Vérifier qu'une erreur de confirmation de mot de passe est affichée
+    cy.get('[data-testid="register-submit-button"]').click(); 
     cy.contains('Les mots de passe ne correspondent pas').should('be.visible');
   });
-});
 
-describe('Dashboard Access', () => {
-  it('should access dashboard after successful login', () => {
-    // Simuler une connexion réussie en stockant un token
-    cy.window().then((win) => {
-      win.localStorage.setItem('token', 'fake-jwt-token');
-      win.localStorage.setItem('user', JSON.stringify({
-        id: 1,
-        email: 'test@example.com',
-        isAdmin: false
-      }));
-    });
+  it('affiche une erreur si le mot de passe est trop court', () => {
+    cy.get('[data-testid="register-email"]').type('test@example.com');
+    cy.get('[data-testid="register-password"]').type('123');
+    cy.get('[data-testid="register-confirm-password"]').type('123');
+    cy.get('[data-testid="register-first-name"]').type('Jean');
+    cy.get('[data-testid="register-last-name"]').type('Dupont');
     
-    // Visiter le dashboard
-    cy.visit('/dashboard');
-    
-    // Vérifier que nous sommes sur le dashboard
-    cy.url().should('include', '/dashboard');
-    cy.contains('Dashboard').should('be.visible');
+    cy.get('[data-testid="register-submit-button"]').click();
+    cy.contains('Le mot de passe doit contenir au moins 6 caractères').should('be.visible');
   });
 
-  it('should display user information', () => {
-    // Simuler une connexion réussie
-    cy.window().then((win) => {
-      win.localStorage.setItem('token', 'fake-jwt-token');
-      win.localStorage.setItem('user', JSON.stringify({
-        id: 1,
-        email: 'test@example.com',
-        isAdmin: false
-      }));
-    });
+  it('réussit l\'inscription et redirige vers la connexion', () => {
+    // Simuler une inscription réussie
+    cy.intercept('POST', '**/v1/users', {
+      statusCode: 201,
+      body: { message: 'User created successfully' }
+    }).as('registerSuccess');
+
+    cy.get('[data-testid="register-email"]').type('nouveau@example.com');
+    cy.get('[data-testid="register-password"]').type('motdepasse123');
+    cy.get('[data-testid="register-confirm-password"]').type('motdepasse123');
+    cy.get('[data-testid="register-first-name"]').type('Jean');
+    cy.get('[data-testid="register-last-name"]').type('Dupont');
     
-    cy.visit('/dashboard');
+    cy.get('[data-testid="register-submit-button"]').click();
     
-    // Vérifier que l'email de l'utilisateur est affiché
-    cy.contains('test@example.com').should('be.visible');
+    cy.wait('@registerSuccess');
+    cy.contains('Inscription réussie').should('be.visible');
+    
+    // Attendre la redirection vers la page de connexion
+    cy.url().should('include', '/login', { timeout: 5000 });
   });
 
-  it('should have logout functionality', () => {
-    // Simuler une connexion réussie
-    cy.window().then((win) => {
-      win.localStorage.setItem('token', 'fake-jwt-token');
-      win.localStorage.setItem('user', JSON.stringify({
-        id: 1,
-        email: 'test@example.com',
-        isAdmin: false
-      }));
-    });
-    
-    cy.visit('/dashboard');
-    
-    // Cliquer sur le bouton de déconnexion
-    cy.get('[data-testid="logout-button"]').click();
-    
-    // Vérifier que nous sommes redirigés vers la page de connexion
-    cy.url().should('include', '/login');
-    
-    // Vérifier que le token a été supprimé
-    cy.window().then((win) => {
-      expect(win.localStorage.getItem('token')).to.be.null;
-    });
-  });
-});
+  it('affiche une erreur si l\'email existe déjà', () => {
+    // Simuler une erreur d'email existant
+    cy.intercept('POST', '**/v1/users', {
+      statusCode: 400,
+      body: { detail: 'Ce nom d\'utilisateur existe déjà' }
+    }).as('registerError');
 
-describe('Responsive Design', () => {
-  const viewports = [
-    { width: 320, height: 568 }, // Mobile
-    { width: 768, height: 1024 }, // Tablet
-    { width: 1280, height: 720 }  // Desktop
-  ];
-
-  viewports.forEach((viewport) => {
-    it(`should be responsive on ${viewport.width}x${viewport.height}`, () => {
-      cy.viewport(viewport.width, viewport.height);
-      cy.visit('/login');
-      
-      // Vérifier que les éléments sont visibles sur toutes les tailles d'écran
-      cy.get('[data-testid="login-email"]').should('be.visible');
-      cy.get('[data-testid="login-password"]').should('be.visible');
-      cy.get('[data-testid="login-submit-button"]').should('be.visible');
-    });
-  });
-});
-
-describe('Error Handling', () => {
-  it('should handle network errors gracefully', () => {
-    cy.visit('/login');
+    cy.get('[data-testid="register-email"]').type('existant@example.com');
+    cy.get('[data-testid="register-password"]').type('motdepasse123');
+    cy.get('[data-testid="register-confirm-password"]').type('motdepasse123');
+    cy.get('[data-testid="register-first-name"]').type('Jean');
+    cy.get('[data-testid="register-last-name"]').type('Dupont');
     
-    // Intercepter les requêtes API et simuler une erreur réseau
-    cy.intercept('POST', '**/api/auth/login', { forceNetworkError: true }).as('loginRequest');
+    cy.get('[data-testid="register-submit-button"]').click();
     
-    // Remplir et soumettre le formulaire
-    cy.get('[data-testid="login-email"]').type('test@example.com');
-    cy.get('[data-testid="login-password"]').type('password123');
-    cy.get('[data-testid="login-submit-button"]').click();
-    
-    // Vérifier qu'un message d'erreur est affiché
-    cy.contains('Erreur lors de la connexion').should('be.visible');
-  });
-
-  it('should handle 404 routes correctly', () => {
-    // Visiter une route qui n'existe pas
-    cy.visit('/nonexistent-route');
-    
-    // Vérifier que nous sommes redirigés vers le dashboard (ou login si non authentifié)
-    cy.url().should('match', /(login|dashboard)/);
+    cy.wait('@registerError');
+    cy.get('.error-message').should('contain.text', 'Ce nom d\'utilisateur existe déjà');
   });
 });

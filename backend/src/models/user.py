@@ -1,7 +1,5 @@
 from passlib.context import CryptContext
 import enum
-
-# Imports SQLAlchemy pour le modèle de base de données
 from sqlalchemy import Column, Integer, String, DateTime, Enum
 from sqlalchemy.sql import func
 from src.database import Base
@@ -13,7 +11,7 @@ class UserRole(str, enum.Enum):
     admin = "admin"
     user = "user"
 
-# MODÈLE BASE DE DONNÉES (SQLAlchemy)
+# MODÈLE BASE DE DONNÉES
 class User(Base):
     __tablename__ = "users"
     
