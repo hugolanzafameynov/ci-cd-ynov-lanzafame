@@ -104,7 +104,10 @@ describe('API Service', () => {
             id: 1,
             username: 'test@example.com',
             name: 'Test',
-            last_name: 'User'
+            lastName: 'User',
+            birthdate: '2000-01-01',
+            city: 'Paris',
+            postalCode: '75000'
           }
         }
       };
@@ -115,17 +118,25 @@ describe('API Service', () => {
         username: 'test@example.com',
         password: 'password123',
         name: 'Test',
-        last_name: 'User'
+        last_name: 'User',
+        birthdate: '2000-01-01',
+        city: 'Paris',
+        postal_code: '75000'
+      };
+
+      const expectedPayload = {
+        username: 'test@example.com',
+        password: 'password123',
+        name: 'Test',
+        lastName: 'User',
+        birthdate: '2000-01-01',
+        city: 'Paris',
+        postalCode: '75000'
       };
 
       const result = await authService.register(userData);
 
-      expect(mockAxios.post).toHaveBeenCalledWith('/v1/users', {
-        username: 'test@example.com',
-        password: 'password123',
-        name: 'Test',
-        lastName: 'User'
-      });
+      expect(mockAxios.post).toHaveBeenCalledWith('/v1/users', expectedPayload);
       expect(result).toEqual(mockResponse.data);
     });
 
@@ -207,8 +218,8 @@ describe('API Service', () => {
       const mockResponse = {
         data: {
           utilisateurs: [
-            { id: 1, username: 'user1@example.com', name: 'User', last_name: 'One' },
-            { id: 2, username: 'user2@example.com', name: 'User', last_name: 'Two' }
+            { id: 1, username: 'user1@example.com', name: 'User', lastName: 'One', role: 'user' },
+            { id: 2, username: 'user2@example.com', name: 'User', lastName: 'Two', role: 'admin' }
           ]
         }
       };
@@ -299,26 +310,22 @@ describe('API Service', () => {
     });
 
     test('should get profile successfully', async () => {
-      const getItemSpy = jest.spyOn(localStorage, 'getItem');
-      const user = { id: 1, username: 'test@example.com', name: 'Test' };
-      
-      getItemSpy.mockReturnValue(JSON.stringify(user));
-      
       const mockResponse = {
-        data: [
-          { id: 1, username: 'test@example.com', name: 'Test', role: 'user' },
-          { id: 2, username: 'other@example.com', name: 'Other' }
-        ]
+        data: {
+          id: 1,
+          username: 'test@example.com',
+          name: 'Test',
+          lastName: 'User',
+          birthdate: '2000-01-01',
+          city: 'Paris',
+          postalCode: '75000',
+          role: 'user'
+        }
       };
-
       mockAxios.get.mockResolvedValueOnce(mockResponse);
-
-      const result = await authService.getProfile();
-
-      expect(mockAxios.get).toHaveBeenCalledWith('/v1/users');
-      expect(result.user).toEqual(mockResponse.data[0]);
-      
-      getItemSpy.mockRestore();
+      const result = await userService.getProfile();
+      expect(mockAxios.get).toHaveBeenCalledWith('/v1/profile');
+      expect(result).toEqual(mockResponse.data);
     });
 
     test('should throw error when user not connected', async () => {

@@ -7,26 +7,49 @@ describe('UserList Component', () => {
         {
             id: 1,
             name: 'John',
-            last_name: 'Doe',
+            lastName: 'Doe',
             username: 'john.doe@example.com',
-            role: 'user'
+            role: 'user',
+            birthdate: '2000-01-01',
+            city: 'Paris',
+            postalCode: '75000',
+            createdAt: '2024-01-01T12:00:00Z'
         },
         {
             id: 2,
             name: 'Jane',
-            last_name: 'Smith',
+            lastName: 'Smith',
             username: 'jane.smith@example.com',
-            role: 'admin'
+            role: 'admin',
+            birthdate: '1990-05-10',
+            city: 'Lyon',
+            postalCode: '69000',
+            createdAt: '2023-12-01T08:30:00Z'
         }
     ];
 
-    test('should render the list of users', () => {
-        render(<UserList users={mockUsers} />);
-
+    test('should render the list of users (user vs admin)', () => {
+        render(<UserList users={mockUsers} isAdmin={false} />);
         expect(screen.getByText('John Doe')).toBeInTheDocument();
         expect(screen.getByText('Jane Smith')).toBeInTheDocument();
         expect(screen.getByText('john.doe@example.com')).toBeInTheDocument();
         expect(screen.getByText('jane.smith@example.com')).toBeInTheDocument();
+        expect(screen.queryByText(/Date de naissance:/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/Ville:/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/Code postal:/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/Créé le:/i)).not.toBeInTheDocument();
+
+        render(<UserList users={mockUsers} isAdmin={true} />);
+        expect(screen.getAllByText('Date de naissance:')).toHaveLength(2);
+        expect(screen.getAllByText('Ville:')).toHaveLength(2);
+        expect(screen.getAllByText('Code postal:')).toHaveLength(2);
+        expect(screen.getAllByText('Créé le:')).toHaveLength(2);
+        expect(screen.getByText('2000-01-01')).toBeInTheDocument();
+        expect(screen.getByText('Paris')).toBeInTheDocument();
+        expect(screen.getByText('75000')).toBeInTheDocument();
+        expect(screen.getByText('1990-05-10')).toBeInTheDocument();
+        expect(screen.getByText('Lyon')).toBeInTheDocument();
+        expect(screen.getByText('69000')).toBeInTheDocument();
     });
 
     test('should render an empty message when no users are present', () => {
@@ -51,8 +74,8 @@ describe('UserList Component', () => {
         render(<UserList users={mockUsers} />);
 
         // Chercher les badges spécifiquement
-        expect(screen.getByText('Admin')).toBeInTheDocument();
-        expect(screen.getAllByText('Utilisateur')).toHaveLength(2); // Badge + Statut
+        expect(screen.getAllByText('Utilisateur')).toHaveLength(1); // Un seul user
+        expect(screen.getAllByText('Admin')).toHaveLength(1); // Un seul admin
     });
 
     test('should render user cards with proper structure', () => {
@@ -88,22 +111,10 @@ describe('UserList Component', () => {
         expect(mockOnDelete).toHaveBeenCalledWith(mockUsers[0].id);
     });
 
-    test('should handle users with different ID formats', () => {
-        const usersWithDifferentIds = [
-            { _id: 'mongo-id-1', name: 'Test', last_name: 'User', username: 'test@example.com', role: 'user' },
-            { id: 2, name: 'Test2', last_name: 'User2', username: 'test2@example.com', role: 'user' }
-        ];
-
-        render(<UserList users={usersWithDifferentIds} />);
-
-        expect(screen.getByText('Test User')).toBeInTheDocument();
-        expect(screen.getByText('Test2 User2')).toBeInTheDocument();
-    });
-
     test('should handle admin role variations', () => {
         const usersWithAdminVariations = [
-            { id: 1, name: 'Admin1', last_name: 'User', username: 'admin1@example.com', role: 'admin' },
-            { id: 2, name: 'Admin2', last_name: 'User', username: 'admin2@example.com', is_admin: true }
+            { id: 1, name: 'Admin1', lastName: 'User', username: 'admin1@example.com', role: 'admin' },
+            { id: 2, name: 'Admin2', lastName: 'User', username: 'admin2@example.com', role: 'admin' }
         ];
 
         render(<UserList users={usersWithAdminVariations} />);

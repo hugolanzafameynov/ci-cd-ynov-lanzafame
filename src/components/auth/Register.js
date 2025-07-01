@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { isAdult, isValidFrenchPostalCode, isValidEmail, isValidName, isValidPassword, isNotEmpty } from './module';
 import './Auth.css';
 
 const Register = () => {
@@ -9,7 +10,10 @@ const Register = () => {
     password: '',
     confirmPassword: '',
     first_name: '',
-    last_name: ''
+    last_name: '',
+    birthdate: '',
+    city: '',
+    postal_code: ''
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -30,6 +34,63 @@ const Register = () => {
     setLoading(true);
     setError('');
 
+    // Validation des champs obligatoires
+    if (!isNotEmpty(formData.first_name)) {
+      setError('Le prénom est requis');
+      setLoading(false);
+      return;
+    }
+    if (!isValidName(formData.first_name)) {
+      setError('Le prénom est invalide');
+      setLoading(false);
+      return;
+    }
+    if (!isNotEmpty(formData.last_name)) {
+      setError('Le nom est requis');
+      setLoading(false);
+      return;
+    }
+    if (!isValidName(formData.last_name)) {
+      setError('Le nom est invalide');
+      setLoading(false);
+      return;
+    }
+    if (!isNotEmpty(formData.city)) {
+      setError('La ville est requise');
+      setLoading(false);
+      return;
+    }
+    if (!isNotEmpty(formData.birthdate)) {
+      setError('La date de naissance est requise');
+      setLoading(false);
+      return;
+    }
+    if (!isNotEmpty(formData.postal_code)) {
+      setError('Le code postal est requis');
+      setLoading(false);
+      return;
+    }
+    if (!isNotEmpty(formData.email)) {
+      setError('L\'email est requis');
+      setLoading(false);
+      return;
+    }
+    if (!isValidEmail(formData.email)) {
+      setError('L\'email est invalide');
+      setLoading(false);
+      return;
+    }
+    if (!isNotEmpty(formData.password)) {
+      setError('Le mot de passe est requis');
+      setLoading(false);
+      return;
+    }
+    if (!isValidPassword(formData.password)) {
+      setError('Le mot de passe doit contenir au moins 6 caractères');
+      setLoading(false);
+      return;
+    }
+
     // Validation des mots de passe
     if (formData.password !== formData.confirmPassword) {
       setError('Les mots de passe ne correspondent pas');
@@ -37,8 +98,16 @@ const Register = () => {
       return;
     }
 
-    if (formData.password.length < 6) {
-      setError('Le mot de passe doit contenir au moins 6 caractères');
+    // Validation âge minimum 18 ans
+    if (!isAdult(formData.birthdate)) {
+      setError('Vous devez avoir au moins 18 ans pour vous inscrire');
+      setLoading(false);
+      return;
+    }
+
+    // Validation code postal français (5 chiffres)
+    if (!isValidFrenchPostalCode(formData.postal_code)) {
+      setError('Le code postal doit être composé de 5 chiffres');
       setLoading(false);
       return;
     }
@@ -49,7 +118,10 @@ const Register = () => {
         username: userData.email,
         password: userData.password,
         name: userData.first_name,
-        last_name: userData.last_name
+        last_name: userData.last_name,
+        birthdate: userData.birthdate,
+        city: userData.city,
+        postal_code: userData.postal_code
       };
       await register(apiData);
       
@@ -110,6 +182,49 @@ const Register = () => {
                 onChange={handleChange}
                 required
                 placeholder="Votre nom"
+              />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="birthdate">Date de naissance</label>
+              <input
+                type="date"
+                id="birthdate"
+                name="birthdate"
+                data-testid="register-birthdate"
+                value={formData.birthdate}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="city">Ville</label>
+              <input
+                type="text"
+                id="city"
+                name="city"
+                data-testid="register-city"
+                value={formData.city}
+                onChange={handleChange}
+                required
+                placeholder="Votre ville"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="postal_code">Code postal</label>
+              <input
+                type="text"
+                id="postal_code"
+                name="postal_code"
+                data-testid="register-postal-code"
+                value={formData.postal_code}
+                onChange={handleChange}
+                required
+                placeholder="Code postal"
               />
             </div>
           </div>

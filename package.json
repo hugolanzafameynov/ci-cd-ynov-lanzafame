@@ -65,7 +65,8 @@
     "cypress": "^13.17.0",
     "gh-pages": "^6.3.0",
     "identity-obj-proxy": "^3.0.0",
-    "jest-environment-jsdom": "^29.7.0",
+    "jest": "^30.0.3",
+    "jest-environment-jsdom": "^30.0.2",
     "jsdoc": "^4.0.4",
     "msw": "^2.10.2",
     "react-test-renderer": "^18.2.0"

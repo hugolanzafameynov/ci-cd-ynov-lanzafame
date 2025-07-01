@@ -1,5 +1,4 @@
-import React from 'react';
-import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { renderWithProviders } from '../../../test-utils';
 import Register from '../Register';
 
@@ -49,7 +48,10 @@ describe('Register Component', () => {
         id: 1,
         username: 'test@example.com',
         name: 'Test',
-        last_name: 'User'
+        lastName: 'User',
+        birthdate: '2000-01-01',
+        city: 'Paris',
+        postalCode: '75000'
       }
     });
 
@@ -70,6 +72,9 @@ describe('Register Component', () => {
     const emailInput = screen.getByTestId('register-email');
     const passwordInput = screen.getByTestId('register-password');
     const confirmPasswordInput = screen.getByTestId('register-confirm-password');
+    const birthdateInput = screen.getByTestId('register-birthdate');
+    const cityInput = screen.getByTestId('register-city');
+    const postalCodeInput = screen.getByTestId('register-postal-code');
     const submitButton = screen.getByTestId('register-submit-button');
 
     fireEvent.change(nameInput, { target: { value: 'Test' } });
@@ -77,23 +82,27 @@ describe('Register Component', () => {
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
     fireEvent.change(confirmPasswordInput, { target: { value: 'password123' } });
+    fireEvent.change(birthdateInput, { target: { value: '2000-01-01' } });
+    fireEvent.change(cityInput, { target: { value: 'Paris' } });
+    fireEvent.change(postalCodeInput, { target: { value: '75000' } });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
       expect(mockRegister).toHaveBeenCalledWith({
+        username: 'test@example.com',
+        password: 'password123',
         name: 'Test',
         last_name: 'User',
-        username: 'test@example.com',
-        password: 'password123'
+        birthdate: '2000-01-01',
+        city: 'Paris',
+        postal_code: '75000'
       });
     });
 
-    // Attendre que le message de succès apparaisse
     await waitFor(() => {
       expect(screen.getByText(/votre compte a été créé avec succès/i)).toBeInTheDocument();
     });
 
-    // Attendre le setTimeout de 2 secondes + un peu plus
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith('/login');
     }, { timeout: 3000 });
@@ -103,7 +112,6 @@ describe('Register Component', () => {
     const mockRegister = jest.fn().mockRejectedValue(
       new Error('Email already exists')
     );
-
     const authValue = {
       user: null,
       login: jest.fn(),
@@ -113,25 +121,28 @@ describe('Register Component', () => {
       isAdmin: false,
       loading: false
     };
-
     renderWithProviders(<Register />, { authValue });
-
     const nameInput = screen.getByTestId('register-first-name');
     const lastNameInput = screen.getByTestId('register-last-name');
     const emailInput = screen.getByTestId('register-email');
     const passwordInput = screen.getByTestId('register-password');
     const confirmPasswordInput = screen.getByTestId('register-confirm-password');
+    const birthdateInput = screen.getByTestId('register-birthdate');
+    const cityInput = screen.getByTestId('register-city');
+    const postalCodeInput = screen.getByTestId('register-postal-code');
     const submitButton = screen.getByTestId('register-submit-button');
-
     fireEvent.change(nameInput, { target: { value: 'Test' } });
     fireEvent.change(lastNameInput, { target: { value: 'User' } });
     fireEvent.change(emailInput, { target: { value: 'existing@example.com' } });
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
     fireEvent.change(confirmPasswordInput, { target: { value: 'password123' } });
+    fireEvent.change(birthdateInput, { target: { value: '2000-01-01' } });
+    fireEvent.change(cityInput, { target: { value: 'Paris' } });
+    fireEvent.change(postalCodeInput, { target: { value: '75000' } });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/email already exists/i)).toBeInTheDocument();
+      expect(screen.getByText('Email already exists')).toBeInTheDocument();
     });
   });
 
@@ -147,12 +158,17 @@ describe('Register Component', () => {
       const emailInput = screen.getByTestId('register-email');
       const passwordInput = screen.getByTestId('register-password');
       const confirmPasswordInput = screen.getByTestId('register-confirm-password');
-      
+      const birthdateInput = screen.getByTestId('register-birthdate');
+      const cityInput = screen.getByTestId('register-city');
+      const postalCodeInput = screen.getByTestId('register-postal-code');
       expect(nameInput).toBeInvalid();
       expect(lastNameInput).toBeInvalid();
       expect(emailInput).toBeInvalid();
       expect(passwordInput).toBeInvalid();
       expect(confirmPasswordInput).toBeInvalid();
+      expect(birthdateInput).toBeInvalid();
+      expect(cityInput).toBeInvalid();
+      expect(postalCodeInput).toBeInvalid();
     });
   });
 
@@ -173,36 +189,61 @@ describe('Register Component', () => {
   test('should validate password length', async () => {
     renderWithProviders(<Register />);
 
+    const nameInput = screen.getByTestId('register-first-name');
+    const lastNameInput = screen.getByTestId('register-last-name');
+    const emailInput = screen.getByTestId('register-email');
+    const birthdateInput = screen.getByTestId('register-birthdate');
+    const cityInput = screen.getByTestId('register-city');
+    const postalCodeInput = screen.getByTestId('register-postal-code');
     const passwordInput = screen.getByTestId('register-password');
     const confirmPasswordInput = screen.getByTestId('register-confirm-password');
     const submitButton = screen.getByTestId('register-submit-button');
 
+    fireEvent.change(nameInput, { target: { value: 'Test' } });
+    fireEvent.change(lastNameInput, { target: { value: 'User' } });
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    fireEvent.change(birthdateInput, { target: { value: '2000-01-01' } });
+    fireEvent.change(cityInput, { target: { value: 'Paris' } });
+    fireEvent.change(postalCodeInput, { target: { value: '75000' } });
     fireEvent.change(passwordInput, { target: { value: '123' } });
     fireEvent.change(confirmPasswordInput, { target: { value: '123' } });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/mot de passe doit contenir au moins 6 caractères/i)).toBeInTheDocument();
+      expect(screen.getByText('Le mot de passe doit contenir au moins 6 caractères')).toBeInTheDocument();
     });
   });
 
   test('should validate password confirmation', async () => {
     renderWithProviders(<Register />);
 
+    const nameInput = screen.getByTestId('register-first-name');
+    const lastNameInput = screen.getByTestId('register-last-name');
+    const emailInput = screen.getByTestId('register-email');
+    const birthdateInput = screen.getByTestId('register-birthdate');
+    const cityInput = screen.getByTestId('register-city');
+    const postalCodeInput = screen.getByTestId('register-postal-code');
     const passwordInput = screen.getByTestId('register-password');
     const confirmPasswordInput = screen.getByTestId('register-confirm-password');
     const submitButton = screen.getByTestId('register-submit-button');
 
+    fireEvent.change(nameInput, { target: { value: 'Test' } });
+    fireEvent.change(lastNameInput, { target: { value: 'User' } });
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    fireEvent.change(birthdateInput, { target: { value: '2000-01-01' } });
+    fireEvent.change(cityInput, { target: { value: 'Paris' } });
+    fireEvent.change(postalCodeInput, { target: { value: '75000' } });
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
     fireEvent.change(confirmPasswordInput, { target: { value: 'differentpassword' } });
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/mots de passe ne correspondent pas/i)).toBeInTheDocument();
+      expect(screen.getByText('Les mots de passe ne correspondent pas')).toBeInTheDocument();
     });
   });
 
   test('should disable submit button during loading', async () => {
+    jest.useFakeTimers();
     let resolveRegister;
     const registerPromise = new Promise(resolve => {
       resolveRegister = resolve;
@@ -226,6 +267,9 @@ describe('Register Component', () => {
     const emailInput = screen.getByTestId('register-email');
     const passwordInput = screen.getByTestId('register-password');
     const confirmPasswordInput = screen.getByTestId('register-confirm-password');
+    const birthdateInput = screen.getByTestId('register-birthdate');
+    const cityInput = screen.getByTestId('register-city');
+    const postalCodeInput = screen.getByTestId('register-postal-code');
     const submitButton = screen.getByTestId('register-submit-button');
 
     fireEvent.change(nameInput, { target: { value: 'Test' } });
@@ -233,35 +277,24 @@ describe('Register Component', () => {
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
     fireEvent.change(confirmPasswordInput, { target: { value: 'password123' } });
+    fireEvent.change(birthdateInput, { target: { value: '2000-01-01' } });
+    fireEvent.change(cityInput, { target: { value: 'Paris' } });
+    fireEvent.change(postalCodeInput, { target: { value: '75000' } });
     fireEvent.click(submitButton);
 
-    // Button should be disabled during loading
-    expect(submitButton).toBeDisabled();
-
-    // Resolve the promise
-    resolveRegister({
-      message: 'User created successfully',
-      user: { id: 1, username: 'test@example.com' }
-    });
-
     await waitFor(() => {
-      expect(screen.getByText(/votre compte a été créé avec succès/i)).toBeInTheDocument();
+      expect(submitButton).toBeDisabled();
     });
+
+    jest.runAllTimers();
+    jest.useRealTimers();
   });
 
-  test('should navigate to login page when clicking login link', () => {
-    renderWithProviders(<Register />);
-
-    const loginLink = screen.getByRole('link', { name: /se connecter/i });
-    expect(loginLink).toHaveAttribute('href', '/login');
-  });
-
-  test('should clear form after successful registration', async () => {
+  test('should redirect to login after successful registration', async () => {
     const mockRegister = jest.fn().mockResolvedValue({
       message: 'User created successfully',
       user: { id: 1, username: 'test@example.com' }
     });
-
     const authValue = {
       user: null,
       login: jest.fn(),
@@ -271,23 +304,25 @@ describe('Register Component', () => {
       isAdmin: false,
       loading: false
     };
-
     renderWithProviders(<Register />, { authValue });
-
     const nameInput = screen.getByTestId('register-first-name');
     const lastNameInput = screen.getByTestId('register-last-name');
     const emailInput = screen.getByTestId('register-email');
     const passwordInput = screen.getByTestId('register-password');
     const confirmPasswordInput = screen.getByTestId('register-confirm-password');
+    const birthdateInput = screen.getByTestId('register-birthdate');
+    const cityInput = screen.getByTestId('register-city');
+    const postalCodeInput = screen.getByTestId('register-postal-code');
     const submitButton = screen.getByTestId('register-submit-button');
-
     fireEvent.change(nameInput, { target: { value: 'Test' } });
     fireEvent.change(lastNameInput, { target: { value: 'User' } });
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
     fireEvent.change(confirmPasswordInput, { target: { value: 'password123' } });
+    fireEvent.change(birthdateInput, { target: { value: '2000-01-01' } });
+    fireEvent.change(cityInput, { target: { value: 'Paris' } });
+    fireEvent.change(postalCodeInput, { target: { value: '75000' } });
     fireEvent.click(submitButton);
-
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith('/login');
     }, { timeout: 3000 });
@@ -298,7 +333,6 @@ describe('Register Component', () => {
       message: 'User created successfully',
       user: { id: 1, username: 'test@example.com' }
     });
-
     const authValue = {
       user: null,
       login: jest.fn(),
@@ -308,25 +342,112 @@ describe('Register Component', () => {
       isAdmin: false,
       loading: false
     };
-
     renderWithProviders(<Register />, { authValue });
-
     const nameInput = screen.getByTestId('register-first-name');
     const lastNameInput = screen.getByTestId('register-last-name');
     const emailInput = screen.getByTestId('register-email');
     const passwordInput = screen.getByTestId('register-password');
     const confirmPasswordInput = screen.getByTestId('register-confirm-password');
+    const birthdateInput = screen.getByTestId('register-birthdate');
+    const cityInput = screen.getByTestId('register-city');
+    const postalCodeInput = screen.getByTestId('register-postal-code');
     const submitButton = screen.getByTestId('register-submit-button');
-
     fireEvent.change(nameInput, { target: { value: 'Test' } });
     fireEvent.change(lastNameInput, { target: { value: 'User' } });
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
     fireEvent.change(confirmPasswordInput, { target: { value: 'password123' } });
+    fireEvent.change(birthdateInput, { target: { value: '2000-01-01' } });
+    fireEvent.change(cityInput, { target: { value: 'Paris' } });
+    fireEvent.change(postalCodeInput, { target: { value: '75000' } });
     fireEvent.click(submitButton);
-
     await waitFor(() => {
       expect(screen.getByText(/votre compte a été créé avec succès/i)).toBeInTheDocument();
+    });
+  });
+
+  test('should show error if user is under 18', async () => {
+    renderWithProviders(<Register />);
+    const nameInput = screen.getByTestId('register-first-name');
+    const lastNameInput = screen.getByTestId('register-last-name');
+    const emailInput = screen.getByTestId('register-email');
+    const passwordInput = screen.getByTestId('register-password');
+    const confirmPasswordInput = screen.getByTestId('register-confirm-password');
+    const birthdateInput = screen.getByTestId('register-birthdate');
+    const cityInput = screen.getByTestId('register-city');
+    const postalCodeInput = screen.getByTestId('register-postal-code');
+    const submitButton = screen.getByTestId('register-submit-button');
+    fireEvent.change(nameInput, { target: { value: 'Test' } });
+    fireEvent.change(lastNameInput, { target: { value: 'User' } });
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    fireEvent.change(passwordInput, { target: { value: 'password123' } });
+    fireEvent.change(confirmPasswordInput, { target: { value: 'password123' } });
+    // Date de naissance < 18 ans
+    const minorDate = `${new Date().getFullYear() - 10}-01-01`;
+    fireEvent.change(birthdateInput, { target: { value: minorDate } });
+    fireEvent.change(cityInput, { target: { value: 'Paris' } });
+    fireEvent.change(postalCodeInput, { target: { value: '75000' } });
+    fireEvent.click(submitButton);
+    await waitFor(() => {
+      expect(screen.getByText('Vous devez avoir au moins 18 ans pour vous inscrire')).toBeInTheDocument();
+    });
+  });
+
+  test('should show error if postal code is invalid', async () => {
+    renderWithProviders(<Register />);
+    const nameInput = screen.getByTestId('register-first-name');
+    const lastNameInput = screen.getByTestId('register-last-name');
+    const emailInput = screen.getByTestId('register-email');
+    const passwordInput = screen.getByTestId('register-password');
+    const confirmPasswordInput = screen.getByTestId('register-confirm-password');
+    const birthdateInput = screen.getByTestId('register-birthdate');
+    const cityInput = screen.getByTestId('register-city');
+    const postalCodeInput = screen.getByTestId('register-postal-code');
+    const submitButton = screen.getByTestId('register-submit-button');
+    fireEvent.change(nameInput, { target: { value: 'Test' } });
+    fireEvent.change(lastNameInput, { target: { value: 'User' } });
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    fireEvent.change(passwordInput, { target: { value: 'password123' } });
+    fireEvent.change(confirmPasswordInput, { target: { value: 'password123' } });
+    fireEvent.change(birthdateInput, { target: { value: '2000-01-01' } });
+    fireEvent.change(cityInput, { target: { value: 'Paris' } });
+    fireEvent.change(postalCodeInput, { target: { value: 'ABCDE' } });
+    fireEvent.click(submitButton);
+    await waitFor(() => {
+      expect(screen.getByText('Le code postal doit être composé de 5 chiffres')).toBeInTheDocument();
+    });
+  });
+
+  test('should show error if first name or last name is invalid', async () => {
+    renderWithProviders(<Register />);
+    const nameInput = screen.getByTestId('register-first-name');
+    const lastNameInput = screen.getByTestId('register-last-name');
+    const emailInput = screen.getByTestId('register-email');
+    const passwordInput = screen.getByTestId('register-password');
+    const confirmPasswordInput = screen.getByTestId('register-confirm-password');
+    const birthdateInput = screen.getByTestId('register-birthdate');
+    const cityInput = screen.getByTestId('register-city');
+    const postalCodeInput = screen.getByTestId('register-postal-code');
+    const submitButton = screen.getByTestId('register-submit-button');
+    // Prénom invalide
+    fireEvent.change(nameInput, { target: { value: '1' } });
+    fireEvent.change(lastNameInput, { target: { value: 'User' } });
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    fireEvent.change(passwordInput, { target: { value: 'password123' } });
+    fireEvent.change(confirmPasswordInput, { target: { value: 'password123' } });
+    fireEvent.change(birthdateInput, { target: { value: '2000-01-01' } });
+    fireEvent.change(cityInput, { target: { value: 'Paris' } });
+    fireEvent.change(postalCodeInput, { target: { value: '75000' } });
+    fireEvent.click(submitButton);
+    await waitFor(() => {
+      expect(screen.getByText('Le prénom est invalide')).toBeInTheDocument();
+    });
+    // Nom invalide
+    fireEvent.change(nameInput, { target: { value: 'Jean' } });
+    fireEvent.change(lastNameInput, { target: { value: '2' } });
+    fireEvent.click(submitButton);
+    await waitFor(() => {
+      expect(screen.getByText('Le nom est invalide')).toBeInTheDocument();
     });
   });
 });

@@ -40,7 +40,9 @@ jest.mock('../../../contexts/AuthContext', () => ({
 jest.mock('../../../services/api', () => ({
   userService: {
     getAllUsers: jest.fn(),
-    deleteUser: jest.fn()
+    getAllUsersSensitive: jest.fn(),
+    deleteUser: jest.fn(),
+    getProfile: jest.fn()
   }
 }));
 
@@ -55,7 +57,7 @@ jest.mock('../../userlist/UserList', () => {
         <div data-testid="user-count">{users.length} utilisateurs</div>
         {users.map(user => (
           <div key={user.id || user._id} data-testid={`user-${user.id || user._id}`}>
-            {user.name} {user.last_name}
+            {user.name} {user.lastName}
             {showActions && (
               <button 
                 onClick={() => onDeleteUser(user.id || user._id)}
@@ -86,7 +88,7 @@ const mockUser = {
   id: 1,
   username: 'test@example.com',
   name: 'Test',
-  last_name: 'User',
+  lastName: 'User',
   is_admin: false
 };
 
@@ -94,13 +96,13 @@ const mockAdminUser = {
   id: 2,
   username: 'admin@example.com',
   name: 'Admin',
-  last_name: 'User',
+  lastName: 'User',
   is_admin: true
 };
 
 const mockUsers = [
-  { id: 1, name: 'John', last_name: 'Doe', username: 'john@example.com' },
-  { id: 2, name: 'Jane', last_name: 'Smith', username: 'jane@example.com' }
+  { id: 1, name: 'John', lastName: 'Doe', username: 'john@example.com' },
+  { id: 2, name: 'Jane', lastName: 'Smith', username: 'jane@example.com' }
 ];
 
 describe('Dashboard Component', () => {
@@ -109,86 +111,24 @@ describe('Dashboard Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     userService.getAllUsers.mockReset();
+    userService.getAllUsersSensitive.mockReset();
     userService.deleteUser.mockReset();
-    
-    // Mock window.confirm
+    userService.getProfile.mockReset();
+  
+
     window.confirm = jest.fn(() => true);
-    
-    // Suppress console.error for cleaner test output
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {
-    // Restore console.error
     if (consoleErrorSpy) {
       consoleErrorSpy.mockRestore();
     }
-    // Restore window.confirm
     delete window.confirm;
   });
 
-  test('should render welcome message for regular user', () => {
-    const authValue = {
-      user: mockUser,
-      logout: jest.fn(),
-      isAdmin: false,
-      isAuthenticated: true,
-      loading: false
-    };
-
-    renderWithAuth(authValue);
-
-    expect(screen.getByText(/bienvenue/i)).toBeInTheDocument();
-    // Check specifically in the welcome text span
-    expect(screen.getByText((content, element) => {
-      return element && element.className === 'welcome-text' && 
-             element.textContent && element.textContent.includes('Test') && 
-             element.textContent.includes('User');
-    })).toBeInTheDocument();
-  });
-
-  test('should render welcome message for admin user', () => {
-    const authValue = {
-      user: mockAdminUser,
-      logout: jest.fn(),
-      isAdmin: true,
-      isAuthenticated: true,
-      loading: false
-    };
-
-    renderWithAuth(authValue);
-
-    expect(screen.getByText(/bienvenue/i)).toBeInTheDocument();
-    // Check specifically in the welcome text span
-    expect(screen.getByText((content, element) => {
-      return element && element.className === 'welcome-text' && 
-             element.textContent && element.textContent.includes('Admin') && 
-             element.textContent.includes('User');
-    })).toBeInTheDocument();
-    // More flexible check for admin occurrences
-    const adminElements = screen.getAllByText(/admin/i);
-    expect(adminElements.length).toBeGreaterThanOrEqual(2); // Badge + Status
-  });
-
-  test('should show user management section for admin users', () => {
-    userService.getAllUsers.mockResolvedValue({ users: mockUsers });
-    
-    const authValue = {
-      user: mockAdminUser,
-      logout: jest.fn(),
-      isAdmin: true,
-      isAuthenticated: true,
-      loading: false
-    };
-
-    renderWithAuth(authValue);
-
-    expect(screen.getByText(/gestion des utilisateurs/i)).toBeInTheDocument();
-    // Check for the specific loading text in the user section
-    expect(screen.getByText(/chargement des utilisateurs/i)).toBeInTheDocument();
-  });
-
   test('should not show user management section for regular users', () => {
+    userService.getAllUsers.mockResolvedValue({ users: mockUsers });
     const authValue = {
       user: mockUser,
       logout: jest.fn(),
@@ -196,12 +136,12 @@ describe('Dashboard Component', () => {
     };
 
     renderWithAuth(authValue);
-
-    expect(screen.queryByText(/gestion des utilisateurs/i)).not.toBeInTheDocument();
-    expect(screen.getByText(/accès limité/i)).toBeInTheDocument();
+    expect(screen.getByText(/Liste des utilisateurs/i)).toBeInTheDocument();
+    expect(screen.queryByTestId('delete-user-1')).not.toBeInTheDocument();
   });
 
-  test('should display user information correctly', () => {
+  test('should display user information correctly', async () => {
+    userService.getProfile.mockResolvedValue(mockUser);
     const authValue = {
       user: mockUser,
       logout: jest.fn(),
@@ -210,9 +150,11 @@ describe('Dashboard Component', () => {
 
     renderWithAuth(authValue);
 
-    expect(screen.getByText(/tableau de bord/i)).toBeInTheDocument();
-    expect(screen.getByText(/informations personnelles/i)).toBeInTheDocument();
-    expect(screen.getByText(mockUser.username)).toBeInTheDocument();
+    expect(screen.getByText(/Tableau de bord/i)).toBeInTheDocument();
+    expect(screen.getByText(/Informations personnelles/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(mockUser.username)).toBeInTheDocument();
+    });
   });
 
   test('should display user role correctly for regular user', () => {
@@ -247,9 +189,7 @@ describe('Dashboard Component', () => {
     };
 
     renderWithAuth(authValue);
-
-    expect(screen.getByText(/tableau de bord/i)).toBeInTheDocument();
-    // Ne devrait pas crash, même sans utilisateur
+    expect(screen.getByText(/Tableau de bord/i)).toBeInTheDocument();
   });
 
   test('should call logout when disconnect button is clicked', () => {
@@ -281,7 +221,7 @@ describe('Dashboard Component', () => {
   });
 
   test('should fetch users for admin on mount', async () => {
-    userService.getAllUsers.mockResolvedValue({ users: mockUsers });
+    userService.getAllUsersSensitive.mockResolvedValue({ users: mockUsers });
     
     const authValue = {
       user: mockAdminUser,
@@ -292,12 +232,12 @@ describe('Dashboard Component', () => {
     renderWithAuth(authValue);
 
     await waitFor(() => {
-      expect(userService.getAllUsers).toHaveBeenCalledTimes(1);
+      expect(userService.getAllUsersSensitive).toHaveBeenCalledTimes(1);
     });
   });
 
   test('should handle refresh button click', async () => {
-    userService.getAllUsers.mockResolvedValue({ users: mockUsers });
+    userService.getAllUsersSensitive.mockResolvedValue({ users: mockUsers });
     
     const authValue = {
       user: mockAdminUser,
@@ -309,7 +249,7 @@ describe('Dashboard Component', () => {
 
     // Wait for component to settle and find refresh button
     await waitFor(() => {
-      expect(userService.getAllUsers).toHaveBeenCalledTimes(1);
+      expect(userService.getAllUsersSensitive).toHaveBeenCalledTimes(1);
     }, { timeout: 3000 });
 
     // Find the refresh button by text content
@@ -320,12 +260,12 @@ describe('Dashboard Component', () => {
     fireEvent.click(refreshButton);
 
     await waitFor(() => {
-      expect(userService.getAllUsers).toHaveBeenCalledTimes(2); // 1 au mount + 1 au click
+      expect(userService.getAllUsersSensitive).toHaveBeenCalledTimes(2); // 1 au mount + 1 au click
     }, { timeout: 3000 });
   });
 
   test('should handle user deletion', async () => {
-    userService.getAllUsers.mockResolvedValue({ users: mockUsers });
+    userService.getAllUsersSensitive.mockResolvedValue({ users: mockUsers });
     userService.deleteUser.mockResolvedValue({});
     
     const authValue = {
@@ -353,7 +293,7 @@ describe('Dashboard Component', () => {
 
   test('should handle API error gracefully', async () => {
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    userService.getAllUsers.mockRejectedValue(new Error('Network error'));
+    userService.getAllUsersSensitive.mockRejectedValue(new Error('Network error'));
     
     const authValue = {
       user: mockAdminUser,

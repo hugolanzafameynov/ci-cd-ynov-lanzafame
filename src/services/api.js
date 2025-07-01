@@ -81,11 +81,15 @@ export const authService = {
   register: async (userData) => {
     return handleColdStart(async () => {
       console.log('Tentative d\'inscription...');
+      console.log('Données utilisateur:', userData);
       const response = await api.post('/v1/users', {
         username: userData.username,
         password: userData.password,
         name: userData.name,
-        lastName: userData.last_name
+        lastName: userData.last_name,
+        birthdate: userData.birthdate,
+        city: userData.city,
+        postalCode: userData.postal_code
       });
       return response.data;
     });
@@ -155,16 +159,27 @@ export const authService = {
 };
 
 export const userService = {
-  // Récupérer tous les utilisateurs (admin seulement) - avec gestion automatique des cold starts
+  // Récupérer tous les utilisateurs (infos de base)
   getAllUsers: async () => {
     return handleColdStart(async () => {
       console.log('Récupération de la liste des utilisateurs...');
       const response = await api.get('/v1/users');
       console.log('Réponse getAllUsers:', response.data);
-      
-      // Votre API renvoie "utilisateurs" au lieu de "users"
       const users = response.data.utilisateurs || response.data.users || response.data || [];
       console.log('Users extraits:', users);
+      
+      return { users: users };
+    });
+  },
+
+  // Récupérer tous les utilisateurs (infos sensibles, admin uniquement)
+  getAllUsersSensitive: async () => {
+    return handleColdStart(async () => {
+      console.log('Récupération de la liste complète des utilisateurs (admin)...');
+      const response = await api.get('/v1/users-sensitive');
+      console.log('Réponse getAllUsersSensitive:', response.data);
+      const users = response.data.utilisateurs ||[];
+      console.log('Users sensibles extraits:', users);
       
       return { users: users };
     });
@@ -178,7 +193,15 @@ export const userService = {
       console.log('Suppression réussie:', response.data);
       return response.data;
     });
-  }
+  },
+
+  // Récupérer le profil utilisateur
+  getProfile: async () => {
+    return handleColdStart(async () => {
+      const response = await api.get('/v1/profile');
+      return response.data;
+    });
+  },
 };
 
 export default api;

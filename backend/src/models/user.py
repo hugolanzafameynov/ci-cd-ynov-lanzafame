@@ -1,6 +1,6 @@
 from passlib.context import CryptContext
 import enum
-from sqlalchemy import Column, Integer, String, DateTime, Enum
+from sqlalchemy import Column, Integer, String, DateTime, Enum, Date
 from sqlalchemy.sql import func
 from src.database import Base
 
@@ -21,6 +21,9 @@ class User(Base):
     role = Column(Enum(UserRole), default=UserRole.user, nullable=False)
     name = Column(String(100), nullable=True)
     last_name = Column(String(100), nullable=True)
+    birthdate = Column(Date, nullable=True)
+    city = Column(String(100), nullable=True)
+    postal_code = Column(String(20), nullable=True)
     created_at = Column(DateTime, server_default=func.now())
 
 # FONCTIONS UTILITAIRES

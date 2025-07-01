@@ -6,30 +6,27 @@ from src.middleware.auth import create_access_token
 
 class UserController:
     async def get_all_users(self, db: AsyncSession) -> dict:
-        """Récupérer tous les utilisateurs (sans les mots de passe)"""
+        """Récupérer la liste de tous les utilisateurs (infos de base, accessible à tous)"""
         try:
             result = await db.execute(select(User))
             users = result.scalars().all()
             users_list = []
-
             for user in users:
                 user_dict = {
                     "_id": user.id,
                     "username": user.username,
-                    "role": user.role.value,
                     "name": user.name,
                     "lastName": user.last_name,
-                    "createdAt": user.created_at
+                    "role": user.role.value
                 }
                 users_list.append(user_dict)
-            
             return {"utilisateurs": users_list}
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Erreur lors de la récupération des utilisateurs: {str(e)}"
             )
-    
+
     async def delete_user(self, user_id: int, current_user: User, db: AsyncSession) -> dict:
         """Supprimer un utilisateur"""
         try:
@@ -120,6 +117,9 @@ class UserController:
             role = user_data.get("role", "user")
             name = user_data.get("name")
             last_name = user_data.get("lastName")
+            birthdate = user_data.get("birthdate")
+            city = user_data.get("city")
+            postal_code = user_data.get("postalCode")
             
             if not username or not password:
                 raise HTTPException(
@@ -143,21 +143,25 @@ class UserController:
                 password=hashed_password,
                 role=UserRole(role),
                 name=name,
-                last_name=last_name
+                last_name=last_name,
+                birthdate=birthdate,
+                city=city,
+                postal_code=postal_code
             )
-            
             db.add(new_user)
             await db.commit()
             await db.refresh(new_user)  # Pour récupérer l'ID généré
-            
             user_response = {
                 "_id": new_user.id,
                 "username": new_user.username,
                 "role": new_user.role.value,
                 "name": new_user.name,
-                "lastName": new_user.last_name
+                "lastName": new_user.last_name,
+                "birthdate": new_user.birthdate.isoformat() if new_user.birthdate else None,
+                "city": new_user.city,
+                "postalCode": new_user.postal_code,
+                "createdAt": new_user.created_at
             }
-            
             return {
                 "message": "Utilisateur créé",
                 "user": user_response
@@ -169,4 +173,35 @@ class UserController:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Erreur lors de la création de l'utilisateur: {str(e)}"
+            )
+        
+    async def get_all_users_sensitive(self, current_user: User, db: AsyncSession) -> dict:
+        """Récupérer la liste de tous les utilisateurs avec informations sensibles (admin uniquement)"""
+        if current_user.role.value != "admin":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Accès réservé à l'administrateur."
+            )
+        try:
+            result = await db.execute(select(User))
+            users = result.scalars().all()
+            users_list = []
+            for user in users:
+                user_dict = {
+                    "_id": user.id,
+                    "username": user.username,
+                    "role": user.role.value,
+                    "name": user.name,
+                    "lastName": user.last_name,
+                    "birthdate": user.birthdate.isoformat() if user.birthdate else None,
+                    "city": user.city,
+                    "postalCode": user.postal_code,
+                    "createdAt": user.created_at
+                }
+                users_list.append(user_dict)
+            return {"utilisateurs": users_list}
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Erreur lors de la récupération des utilisateurs: {str(e)}"
             )
