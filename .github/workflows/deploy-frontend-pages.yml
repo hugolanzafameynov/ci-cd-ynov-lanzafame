@@ -50,6 +50,21 @@ jobs:
           name: frontend-coverage
           fail_ci_if_error: true
 
+      - name: Start frontend (React) in background
+        run: npm start &
+        env:
+          CI: true
+
+      - name: Wait for frontend to be ready
+        run: |
+          n=0
+          until [ "$n" -ge 20 ]
+          do
+            nc -z localhost 3000 && break
+            n=$((n+1))
+            sleep 3
+          done
+
       - name: Run Cypress e2e tests
         run: npm run cypress:run
         env:
