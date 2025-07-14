@@ -3,7 +3,13 @@ import PostsPage from '../PostsPage';
 import { postService } from '../../../services/postApi';
 import { BrowserRouter } from 'react-router-dom';
 
-jest.mock('../../../services/postApi');
+jest.mock('axios');
+jest.mock('../../../services/postApi', () => ({
+  postService: {
+    getAllPosts: jest.fn(),
+    createPost: jest.fn()
+  }
+}));
 
 const mockPosts = [
   { id: '1', title: 'Post 1', content: 'Contenu 1' },
