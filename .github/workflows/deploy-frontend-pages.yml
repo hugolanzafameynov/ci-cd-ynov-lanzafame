@@ -96,7 +96,7 @@ jobs:
         env:
           # Variables d'environnement configurables via GitHub Secrets
           REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL || 'https://ci-cd-ynov-back-lanzafame.vercel.app' }}
-          REACT_APP_POSTS_API_URL: ${{ secrets.REACT_APP_POSTS_API_URL || 'https://ci-cd-ynov-node.vercel.app' }
+          REACT_APP_POSTS_API_URL: ${{ secrets.REACT_APP_POSTS_API_URL || 'https://ci-cd-ynov-node.vercel.app' }}
           SECRET_KEY: ${{ secrets.SECRET_KEY || 'secret' }}
           ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL || 'loise.fenoll@ynov.com' }}
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD || 'default-password' }}
