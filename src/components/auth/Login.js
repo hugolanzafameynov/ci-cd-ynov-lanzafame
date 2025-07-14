@@ -41,7 +41,7 @@ const Login = () => {
       <div className="auth-card">
         <h2>Connexion</h2>
         {error && (
-          <div className="auth-error" data-testid="login-error">
+          <div className="auth-error error-message" data-testid="login-error">
             {error}
           </div>
         )}

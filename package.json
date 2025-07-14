@@ -55,6 +55,11 @@
       "last 1 safari version"
     ]
   },
+  "jest": {
+    "transformIgnorePatterns": [
+      "node_modules/(?!(axios)/)"
+    ]
+  },
   "devDependencies": {
     "@babel/cli": "^7.25.7",
     "@babel/core": "^7.25.8",
