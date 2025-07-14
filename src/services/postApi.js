@@ -1,4 +1,4 @@
-import axios from 'axios';
+const axios = require('axios');
 
 const POSTS_API_URL = process.env.REACT_APP_POSTS_API_URL;
 
