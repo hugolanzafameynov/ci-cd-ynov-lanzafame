@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { userService } from '../../services/api';
+import { postService } from '../../services/postApi';
 import UserList from '../userlist/UserList';
 import './Dashboard.css';
 
@@ -10,6 +11,13 @@ const Dashboard = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [postForm, setPostForm] = useState({
+    title: '',
+    content: ''
+  });
+  const [postLoading, setPostLoading] = useState(false);
+  const [postError, setPostError] = useState('');
+  const [postSuccess, setPostSuccess] = useState('');
 
   useEffect(() => {
     fetchProfile();
@@ -70,6 +78,40 @@ const Dashboard = () => {
     logout();
   };
 
+  const handlePostInputChange = (e) => {
+    const { name, value } = e.target;
+    setPostForm(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleCreatePost = async (e) => {
+    e.preventDefault();
+    if (!postForm.title.trim() || !postForm.content.trim()) {
+      setPostError('Veuillez remplir tous les champs');
+      return;
+    }
+
+    setPostLoading(true);
+    setPostError('');
+    setPostSuccess('');
+
+    try {
+      await postService.createPost({
+        title: postForm.title.trim(),
+        content: postForm.content.trim()
+      });
+      setPostSuccess('Post créé avec succès !');
+      setPostForm({ title: '', content: '' });
+      setTimeout(() => setPostSuccess(''), 3000);
+    } catch (error) {
+      setPostError(error.message || 'Erreur lors de la création du post');
+    } finally {
+      setPostLoading(false);
+    }
+  };
+
   return (
     <div className="dashboard">
       <header className="dashboard-header">
@@ -113,6 +155,48 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
+
+        <div className="dashboard-card">
+          <h2>Créer un nouveau post</h2>
+          <form onSubmit={handleCreatePost} className="post-form">
+            <div className="form-group">
+              <label htmlFor="title">Titre du post</label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                value={postForm.title}
+                onChange={handlePostInputChange}
+                placeholder="Entrez le titre du post"
+                disabled={postLoading}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="content">Contenu</label>
+              <textarea
+                id="content"
+                name="content"
+                value={postForm.content}
+                onChange={handlePostInputChange}
+                placeholder="Entrez le contenu du post"
+                rows="4"
+                disabled={postLoading}
+                required
+              />
+            </div>
+            {postError && <div className="error-message">{postError}</div>}
+            {postSuccess && <div className="success-message">{postSuccess}</div>}
+            <button 
+              type="submit" 
+              className="btn btn-primary"
+              disabled={postLoading}
+            >
+              {postLoading ? 'Création...' : 'Créer le post'}
+            </button>
+          </form>
+        </div>
+
         <div className="dashboard-card">
           <div className="card-header">
             <h2>Liste des utilisateurs</h2>

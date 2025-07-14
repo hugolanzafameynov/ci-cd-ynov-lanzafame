@@ -40,8 +40,11 @@ const Login = () => {
     <div className="auth-container">
       <div className="auth-card">
         <h2>Connexion</h2>
-        {error && <div className="error-message">{error}</div>}
-        
+        {error && (
+          <div className="auth-error" data-testid="login-error">
+            {error}
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
             <label htmlFor="email">Email</label>
@@ -85,6 +88,10 @@ const Login = () => {
           <p>
             Pas encore de compte ?{' '}
             <Link to="/register">S'inscrire</Link>
+          </p>
+          <p>
+            Tu veux voir les posts ?{' '}
+            <Link to="/posts">Clique ici</Link>
           </p>
         </div>
       </div>

@@ -1,0 +1,78 @@
+.posts-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.posts-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  width: 100%;
+  max-width: 700px;
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.posts-card h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.posts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.post-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(102, 126, 234, 0.08);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.post-card h2 {
+  margin: 0 0 10px 0;
+  color: #764ba2;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.post-card p {
+  margin: 0;
+  color: #333;
+  font-size: 15px;
+}
+
+.loading {
+  text-align: center;
+  color: #667eea;
+}
+
+.error-message {
+  background: #ffe0e0;
+  color: #a00;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+}

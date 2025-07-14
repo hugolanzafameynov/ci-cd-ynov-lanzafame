@@ -106,6 +106,37 @@ const mockUsers = [
 ];
 
 describe('Dashboard Component', () => {
+  test('should create a post via the form', async () => {
+    // Mock postService.createPost
+    const { postService } = require('../../../services/postApi');
+    const mockCreatePost = jest.fn().mockResolvedValue({});
+    postService.createPost = mockCreatePost;
+
+    const authValue = {
+      user: mockUser,
+      logout: jest.fn(),
+      isAdmin: false
+    };
+
+    renderWithAuth(authValue);
+
+    // Remplir le formulaire
+    const titleInput = screen.getByLabelText(/titre du post/i);
+    const contentInput = screen.getByLabelText(/contenu/i);
+    const submitButton = screen.getByRole('button', { name: /créer le post/i });
+
+    fireEvent.change(titleInput, { target: { value: 'Mon titre' } });
+    fireEvent.change(contentInput, { target: { value: 'Mon contenu' } });
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(mockCreatePost).toHaveBeenCalledWith({
+        title: 'Mon titre',
+        content: 'Mon contenu'
+      });
+      expect(screen.getByText(/post créé avec succès/i)).toBeInTheDocument();
+    });
+  });
   let consoleErrorSpy;
   
   beforeEach(() => {

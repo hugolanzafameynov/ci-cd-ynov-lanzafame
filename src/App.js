@@ -4,6 +4,7 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Dashboard from './components/dashboard/Dashboard';
+import PostsPage from './components/posts/PostsPage';
 import './App.css';
 import './components/common/Common.css';
 
@@ -35,6 +36,9 @@ const App = () => {
                                 </ProtectedRoute>
                             } 
                         />
+                        
+                        {/* Route publique pour afficher tous les posts */}
+                        <Route path="/posts" element={<PostsPage />} />
                         
                         {/* Route de fallback */}
                         <Route path="*" element={<Navigate to="/dashboard" replace />} />
